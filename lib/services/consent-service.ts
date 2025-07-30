@@ -130,6 +130,7 @@ export class ConsentService {
 
       if (!pendingMembers || pendingMembers.length === 0) {
         console.log('No pending consent requests for user:', userId)
+      console.log('ConsentService: Looking for members with consent_given = null OR false')
         return
       }
 
