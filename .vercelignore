@@ -41,8 +41,7 @@ CHANGELOG.md
 docs/
 *.md
 
-# Git
-.git
+# Git (keep .git for Vercel build process)
 .gitignore
 
 # Build artifacts (except .next for deployment)
