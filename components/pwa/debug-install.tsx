@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Copy, X, Minimize2, Bug } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -16,6 +16,7 @@ export function DebugInstall() {
   const [isInstalled, setIsInstalled] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [isMinimized, setIsMinimized] = useState(false)
 
   const addDebug = (message: string) => {
     setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
@@ -122,6 +123,19 @@ export function DebugInstall() {
 
   if (!isVisible) return null
 
+  // Minimized floating icon
+  if (isMinimized) {
+    return (
+      <Button
+        onClick={() => setIsMinimized(false)}
+        className="fixed top-4 right-4 z-50 h-10 w-10 rounded-full bg-black hover:bg-gray-800 text-white shadow-lg border-2 border-gray-300 p-0"
+        title="Debug Tools"
+      >
+        <Bug className="h-4 w-4" />
+      </Button>
+    )
+  }
+
   return (
     <Card className="fixed top-4 right-4 w-80 z-50 bg-white shadow-lg border-2">
       <CardHeader className="pb-2">
@@ -137,10 +151,20 @@ export function DebugInstall() {
               {isCollapsed ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
             </Button>
             <Button
+              onClick={() => setIsMinimized(true)}
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+              title="Minimize"
+            >
+              <Minimize2 className="h-3 w-3" />
+            </Button>
+            <Button
               onClick={() => setIsVisible(false)}
               size="sm"
               variant="ghost"
               className="h-6 w-6 p-0"
+              title="Close"
             >
               <X className="h-3 w-3" />
             </Button>

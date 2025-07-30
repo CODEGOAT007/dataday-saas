@@ -102,6 +102,15 @@ export function useAuth() {
       router.push('/')
       router.refresh()
     },
+    onError: (error) => {
+      // Reason: Log logout errors but still clear local state
+      console.error('Logout error:', error)
+      // Clear local state even if server logout fails
+      queryClient.setQueryData(['auth', 'user'], null)
+      queryClient.invalidateQueries({ queryKey: ['auth'] })
+      router.push('/')
+      router.refresh()
+    },
   })
 
   return {

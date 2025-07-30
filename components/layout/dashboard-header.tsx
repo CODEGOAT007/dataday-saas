@@ -43,7 +43,7 @@ export function DashboardHeader() {
               variant="ghost"
               size="icon"
               showIcon={true}
-              className="sm:w-auto sm:px-3"
+              className="sm:w-auto sm:px-3 text-gray-600 hover:text-gray-900"
             >
               <span className="hidden sm:inline ml-2">Sign Out</span>
             </LogoutButton>
