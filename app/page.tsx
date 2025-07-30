@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
+import { InstallButton } from '@/components/pwa/install-button'
 import { ArrowRight, CheckCircle, Users, Brain, Shield, Zap } from 'lucide-react'
 import Link from 'next/link'
 
@@ -213,12 +214,21 @@ export default function HomePage() {
               Join thousands of people who have transformed their lives with Dataday's 
               Social Accountability Network system.
             </p>
-            <Button size="lg" variant="secondary" asChild>
-              <Link href="/auth/signup">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/auth/signup">
+                  Start Free Trial
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <InstallButton
+                variant="outline"
+                size="lg"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                Install App
+              </InstallButton>
+            </div>
           </CardContent>
         </Card>
       </section>

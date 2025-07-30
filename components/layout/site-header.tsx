@@ -14,6 +14,7 @@ import {
   Shield,
   ChevronDown
 } from 'lucide-react'
+import { InstallButton } from '@/components/pwa/install-button'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -214,6 +215,13 @@ export function SiteHeader() {
                   ))}
                 </div>
                 <div className="py-6 space-y-4">
+                  <InstallButton
+                    variant="outline"
+                    className="w-full"
+                    showIcon={true}
+                  >
+                    Install MyDataday
+                  </InstallButton>
                   <Button variant="outline" className="w-full" asChild>
                     <Link href="/auth/login">Sign in</Link>
                   </Button>

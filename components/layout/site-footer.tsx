@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Target, Twitter, Github, Linkedin, Mail } from 'lucide-react'
+import { InstallButton } from '@/components/pwa/install-button'
 
 const navigation = {
   product: [
@@ -69,20 +70,28 @@ export function SiteFooter() {
               <span className="text-xl font-bold text-gray-900">Dataday</span>
             </div>
             <p className="text-sm leading-6 text-gray-600">
-              The universal life progress system that makes sure your goals happen. 
+              The universal life progress system that makes sure your goals happen.
               Track daily progress, get AI coaching, and activate your social accountability network.
             </p>
-            <div className="flex space-x-6">
-              {social.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-400 hover:text-gray-500 transition-colors"
-                >
-                  <span className="sr-only">{item.name}</span>
-                  <item.icon className="h-6 w-6" aria-hidden="true" />
-                </a>
-              ))}
+            <div className="space-y-4">
+              <InstallButton
+                variant="outline"
+                size="sm"
+                className="w-fit"
+              >
+                Install MyDataday
+              </InstallButton>
+              <div className="flex space-x-6">
+                {social.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-400 hover:text-gray-500 transition-colors"
+                  >
+                    <span className="sr-only">{item.name}</span>
+                    <item.icon className="h-6 w-6" aria-hidden="true" />
+                  </a>
+                ))}
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">

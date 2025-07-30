@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Home, Target, Calendar, Settings, Users, Brain, Menu, X } from 'lucide-react'
 import { LogoutButton } from '@/components/auth/logout-button'
+import { InstallButton } from '@/components/pwa/install-button'
 
 const navigation = [
   { name: 'Today', href: '/today', icon: Calendar },
@@ -74,8 +75,15 @@ export function DashboardNav() {
                 )
               })}
 
-              {/* Logout button for mobile */}
-              <div className="pt-2 border-t border-gray-200 mt-2">
+              {/* Install button and Logout button for mobile */}
+              <div className="pt-2 border-t border-gray-200 mt-2 space-y-2">
+                <InstallButton
+                  variant="outline"
+                  size="default"
+                  className="w-full justify-start"
+                >
+                  Install MyDataday
+                </InstallButton>
                 <LogoutButton
                   variant="ghost"
                   size="default"
