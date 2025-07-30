@@ -114,9 +114,7 @@ export function EmergencySupportTeamSetup() {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              userId: user.id.length === 36 ? user.id : '9fc00f52-b0aa-4a01-8a3d-a72b0992577e'
-            }),
+            body: JSON.stringify({ userId: user.id }),
           })
         } catch (error) {
           console.error('Error sending consent requests:', error)

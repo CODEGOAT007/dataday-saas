@@ -132,9 +132,18 @@ export function InstallPrompt() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
 
+    // Reason: Fallback timer - show install prompt after 30 seconds if no beforeinstallprompt
+    const fallbackTimer = setTimeout(() => {
+      if (!deferredPrompt && !isInstalled && isMobileOrTablet()) {
+        console.log('PWA Install: Fallback timer triggered - showing prompt without beforeinstallprompt')
+        setShowPrompt(true)
+      }
+    }, 30000) // 30 seconds
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       window.removeEventListener('appinstalled', handleAppInstalled)
+      clearTimeout(fallbackTimer)
     }
   }, [isInstalled])
 
@@ -162,13 +171,16 @@ export function InstallPrompt() {
     return null
   }
 
-  // Reason: Don't show if already installed or no install capability
-  if (isInstalled || (!deferredPrompt && platform !== 'ios')) {
+  // Reason: Don't show if already installed
+  if (isInstalled) {
     return null
   }
 
-  // Reason: Don't show prompt if showPrompt is false
-  if (!showPrompt) {
+  // Reason: Show iOS instructions even without deferred prompt
+  // For Android, show if we have deferred prompt OR if user has been on page for 30+ seconds
+  const shouldShow = platform === 'ios' || deferredPrompt || showPrompt
+
+  if (!shouldShow) {
     return null
   }
 
@@ -196,14 +208,36 @@ export function InstallPrompt() {
         </div>
 
         {platform === 'android' || platform === 'desktop' ? (
-          <Button 
-            onClick={handleInstall}
-            className="w-full"
-            size="sm"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Install App
-          </Button>
+          deferredPrompt ? (
+            <Button
+              onClick={handleInstall}
+              className="w-full"
+              size="sm"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Install App
+            </Button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                To install this app:
+              </p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>1. Tap the menu (⋮) in Chrome</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>2. Tap "Add to Home screen"</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => setShowPrompt(false)}
+              >
+                Got it
+              </Button>
+            </div>
+          )
         ) : platform === 'ios' ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">

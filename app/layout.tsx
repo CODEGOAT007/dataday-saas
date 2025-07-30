@@ -6,7 +6,8 @@ import { Toaster } from '@/components/ui/toaster'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { InstallPrompt } from '@/components/pwa/install-prompt'
-// import { DebugInstall } from '@/components/pwa/debug-install' // Temporarily disabled
+import { DebugInstall } from '@/components/pwa/debug-install' // Re-enabled for troubleshooting
+import { ClearInstallCache } from '@/components/pwa/clear-install-cache' // Temporary debugging tool
 import { ServiceWorkerRegistration } from '@/components/pwa/service-worker-registration'
 import { cn } from '@/lib/utils'
 import './globals.css'
@@ -120,7 +121,8 @@ export default function RootLayout({
             {children}
             <Toaster />
             <InstallPrompt />
-            {/* <DebugInstall /> */}
+            <DebugInstall />
+            <ClearInstallCache />
             <ServiceWorkerRegistration />
           </QueryProvider>
         </ThemeProvider>
