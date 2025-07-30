@@ -1,0 +1,16 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue circular background -->
+  <circle cx="200" cy="200" r="200" fill="#2563eb"/>
+  
+  <!-- Calendar with checkmark (white on blue) - Large and clear -->
+  <g stroke="white" stroke-width="12" fill="none">
+    <!-- Calendar body -->
+    <rect x="100" y="120" width="200" height="160" rx="16" ry="16" />
+    <!-- Calendar rings/hangers -->
+    <path d="M150 80v50M250 80v50" stroke-linecap="round" />
+    <!-- Calendar header line -->
+    <path d="M100 170h200" />
+    <!-- Large checkmark with breathing room -->
+    <path d="M140 210l30 30L280 180" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+  </g>
+</svg>
