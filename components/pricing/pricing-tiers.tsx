@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Check, Zap, Crown, Star } from 'lucide-react'
-import { PRICING_TIERS, type PricingTierId } from '@/lib/stripe'
+import { PRICING_TIERS, type PricingTierId, getPublicPricingTiers } from '@/lib/stripe'
 import { useAuth } from '@/hooks/use-auth'
 import { toast } from 'sonner'
 
@@ -15,6 +15,7 @@ interface PricingTiersProps {
 }
 
 const tierIcons = {
+  essential: Zap,
   basic: Zap,
   pro: Star,
   premium: Crown,
@@ -22,6 +23,7 @@ const tierIcons = {
 }
 
 const tierColors = {
+  essential: 'bg-gray-500',
   basic: 'bg-blue-500',
   pro: 'bg-purple-500',
   premium: 'bg-orange-500',
@@ -105,7 +107,8 @@ export function PricingTiers({ currentTier, onSelectTier }: PricingTiersProps) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {Object.entries(PRICING_TIERS).map(([tierId, tier]) => {
+      {getPublicPricingTiers().map((tier) => {
+        const tierId = tier.id
         const Icon = tierIcons[tierId as PricingTierId]
         const isCurrentTier = currentTier === tierId
         const isPopular = (tier as any).popular
@@ -135,12 +138,25 @@ export function PricingTiers({ currentTier, onSelectTier }: PricingTiersProps) {
               
               <CardTitle className="text-2xl">{tier.name}</CardTitle>
               
-              <div className="text-3xl font-bold">
-                ${tier.price}
-                <span className="text-sm font-normal text-muted-foreground">/month</span>
+              <div className="space-y-2">
+                <div className="text-3xl font-bold">
+                  ${tier.price}
+                  <span className="text-sm font-normal text-muted-foreground">/month</span>
+                </div>
+                {'betaPrice' in tier && (
+                  <div className="bg-gradient-to-r from-green-100 to-blue-100 border border-green-300 rounded-lg p-3">
+                    <div className="text-lg font-bold text-green-800">
+                      ${tier.betaPrice}/month
+                    </div>
+                    <div className="text-xs text-green-600">
+                      With mentor code + lifetime rate
+                    </div>
+                  </div>
+                )}
               </div>
               
               <CardDescription>
+                {tierId === 'essential' && 'Essential features to get back on track'}
                 {tierId === 'basic' && 'Perfect for getting started with goal achievement'}
                 {tierId === 'pro' && 'Ideal for serious goal achievers who want human support'}
                 {tierId === 'premium' && 'Advanced features for ambitious individuals'}
@@ -172,10 +188,13 @@ export function PricingTiers({ currentTier, onSelectTier }: PricingTiersProps) {
               <Button
                 className="w-full"
                 variant={isCurrentTier ? 'outline' : (isPopular ? 'default' : 'outline')}
-                onClick={() => handleSelectTier(tierId as PricingTierId)}
+                onClick={() => {
+                  // Redirect to beta access page instead of direct subscription
+                  window.location.href = '/beta-access'
+                }}
                 disabled={isCurrentTier || isLoading}
               >
-                {isLoading ? 'Processing...' : isCurrentTier ? 'Current Plan' : !isStripeConfigured ? 'Demo Mode' : `Choose ${tier.name}`}
+                {isLoading ? 'Processing...' : isCurrentTier ? 'Current Plan' : !isStripeConfigured ? 'Demo Mode' : 'Get Mentor Code'}
               </Button>
             </CardFooter>
           </Card>

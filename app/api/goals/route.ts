@@ -6,6 +6,9 @@ import { z } from 'zod'
 const createGoalSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title too long'),
   description: z.string().optional(),
+  frequency: z.string().optional(),
+  duration: z.string().optional(),
+  voice_note_url: z.string().optional(),
   target_frequency: z.enum(['daily', 'weekly', 'monthly']).default('daily'),
   escalation_enabled: z.boolean().default(true),
 })
@@ -69,13 +72,39 @@ export async function POST(request: NextRequest) {
     const validatedData = createGoalSchema.parse(body)
 
     // Reason: Create new goal
+    const goalData: any = {
+      title: validatedData.title,
+      description: validatedData.description,
+      voice_note_url: validatedData.voice_note_url,
+      user_id: user.id,
+      created_at: new Date().toISOString(),
+      status: 'active',
+      start_date: new Date().toISOString().split('T')[0],
+      difficulty_level: 1,
+      is_public: false,
+      escalation_enabled: validatedData.escalation_enabled
+    }
+
+    // Map frequency to target_frequency
+    if (validatedData.frequency) {
+      const frequencyMapping: { [key: string]: { target_frequency: number, frequency_type: string } } = {
+        'daily': { target_frequency: 7, frequency_type: 'weekly' },
+        'weekly': { target_frequency: 1, frequency_type: 'weekly' },
+        '3x-week': { target_frequency: 3, frequency_type: 'weekly' },
+        '5x-week': { target_frequency: 5, frequency_type: 'weekly' }
+      }
+      const freqData = frequencyMapping[validatedData.frequency] || { target_frequency: 7, frequency_type: 'weekly' }
+      goalData.target_frequency = freqData.target_frequency
+      goalData.frequency_type = freqData.frequency_type
+    } else {
+      goalData.target_frequency = validatedData.target_frequency === 'daily' ? 7 :
+                                   validatedData.target_frequency === 'weekly' ? 1 : 4
+      goalData.frequency_type = 'weekly'
+    }
+
     const { data: goal, error } = await supabase
       .from('goals')
-      .insert({
-        ...validatedData,
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-      })
+      .insert(goalData)
       .select()
       .single()
 

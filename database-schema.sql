@@ -63,8 +63,8 @@ CREATE TABLE public.goals (
   completed_at TIMESTAMP WITH TIME ZONE
 );
 
--- Emergency Support Team (Family/Friends Social Accountability Network)
-CREATE TABLE public.emergency_support_team (
+-- Support Circle (Family/Friends Social Accountability Network)
+CREATE TABLE public.support_circle (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
@@ -145,11 +145,11 @@ CREATE TABLE public.escalation_logs (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   goal_id UUID REFERENCES public.goals(id) ON DELETE CASCADE NOT NULL,
-  emergency_support_team_id UUID REFERENCES public.emergency_support_team(id),
+  support_circle_id UUID REFERENCES public.support_circle(id),
 
   -- Escalation details
   escalation_day INTEGER NOT NULL CHECK (escalation_day >= 1), -- 1, 2, 3+ days missed
-  type TEXT NOT NULL CHECK (type IN ('progress_team_outreach', 'emergency_support_team_notification', 'emergency_support_team_checkin_request', 'milestone_celebration')),
+  type TEXT NOT NULL CHECK (type IN ('progress_team_outreach', 'support_circle_notification', 'support_circle_checkin_request', 'milestone_celebration')),
 
   -- Communication details
   contact_method TEXT CHECK (contact_method IN ('text_voicemail', 'email', 'text_only')),
@@ -166,10 +166,10 @@ CREATE TABLE public.interactions (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
   progress_team_member_id UUID, -- Reference to Progress Support Team member
-  emergency_support_team_id UUID REFERENCES public.emergency_support_team(id),
+  support_circle_id UUID REFERENCES public.support_circle(id),
 
   -- Interaction details
-  type TEXT NOT NULL CHECK (type IN ('progress_team_ai', 'progress_team_human', 'emergency_support_team_notification', 'planning_session')),
+  type TEXT NOT NULL CHECK (type IN ('progress_team_ai', 'progress_team_human', 'support_circle_notification', 'planning_session')),
   content TEXT,
   ai_persona_name TEXT, -- Which of the 2-3 AI personas sent this
 
@@ -332,13 +332,13 @@ CREATE INDEX idx_daily_logs_goal_id ON public.daily_logs(goal_id);
 CREATE INDEX idx_daily_logs_date ON public.daily_logs(log_date);
 CREATE INDEX idx_daily_logs_completed ON public.daily_logs(completed);
 
-CREATE INDEX idx_emergency_support_team_user_id ON public.emergency_support_team(user_id);
-CREATE INDEX idx_emergency_support_team_active ON public.emergency_support_team(user_id, is_active);
-CREATE INDEX idx_emergency_support_team_consent ON public.emergency_support_team(user_id, consent_given);
+CREATE INDEX idx_support_circle_user_id ON public.support_circle(user_id);
+CREATE INDEX idx_support_circle_active ON public.support_circle(user_id, is_active);
+CREATE INDEX idx_support_circle_consent ON public.support_circle(user_id, consent_given);
 
 CREATE INDEX idx_escalation_logs_user_id ON public.escalation_logs(user_id);
 CREATE INDEX idx_escalation_logs_goal_id ON public.escalation_logs(goal_id);
-CREATE INDEX idx_escalation_logs_emergency_support_team_id ON public.escalation_logs(emergency_support_team_id);
+CREATE INDEX idx_escalation_logs_support_circle_id ON public.escalation_logs(support_circle_id);
 CREATE INDEX idx_escalation_logs_created_at ON public.escalation_logs(created_at);
 
 CREATE INDEX idx_interactions_user_id ON public.interactions(user_id, created_at);
@@ -369,7 +369,7 @@ CREATE TRIGGER update_goals_updated_at BEFORE UPDATE ON public.goals
 CREATE TRIGGER update_daily_logs_updated_at BEFORE UPDATE ON public.daily_logs
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_emergency_support_team_updated_at BEFORE UPDATE ON public.emergency_support_team
+CREATE TRIGGER update_support_circle_updated_at BEFORE UPDATE ON public.support_circle
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_streaks_updated_at BEFORE UPDATE ON public.streaks

@@ -36,15 +36,21 @@ export function useAuth() {
 
   // Reason: Mutation for user signup
   const signUpMutation = useMutation({
-    mutationFn: async ({ email, password, fullName }: { 
+    mutationFn: async ({ email, password, fullName, redirectTo }: {
       email: string
       password: string
-      fullName: string 
+      fullName: string
+      redirectTo?: string
     }) => {
+      // Reason: Ensure email confirmation brings user back to intended next step in both local and prod
+      const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || 'https://mydataday.app')
+      const callbackUrl = redirectTo ? `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}` : `${origin}/auth/callback`
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: callbackUrl,
           data: {
             full_name: fullName,
           },

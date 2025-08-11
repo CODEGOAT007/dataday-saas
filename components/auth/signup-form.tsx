@@ -19,8 +19,12 @@ export function SignupForm() {
     const password = formData.get('password') as string
     const fullName = formData.get('name') as string
 
+    // Reason: Pass redirectTo param so email confirmation returns to current flow step
+    const urlParams = new URLSearchParams(window.location.search)
+    const redirectTo = urlParams.get('redirectTo') || undefined
+
     try {
-      const result = await signUp({ email, password, fullName })
+      const result = await signUp({ email, password, fullName, redirectTo })
 
       // Reason: Show success message if email confirmation is needed
       if (result && 'needsConfirmation' in result && result.needsConfirmation) {

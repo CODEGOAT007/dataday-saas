@@ -63,7 +63,7 @@ export default function TestEmergencySupportTeamPage() {
                 </div>
               </div>
               <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
-                <Link href="/onboarding/emergency-support-team">
+                <Link href="/onboarding/support-circle">
                   Try Setup Flow
                 </Link>
               </Button>

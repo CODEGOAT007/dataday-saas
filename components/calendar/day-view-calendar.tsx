@@ -86,9 +86,9 @@ export function DayViewCalendar() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full px-2 sm:px-0">
       {/* Header */}
-      <div className="flex flex-col items-center gap-4 mb-6">
+      <div className="flex flex-col items-center gap-4 mb-4 sm:mb-6">
         {/* Navigation Controls */}
         <div className="flex items-center gap-4">
           <Button
@@ -100,7 +100,7 @@ export function DayViewCalendar() {
           </Button>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               {formatDate(selectedDate)}
             </h1>
             {isToday(selectedDate) && (
@@ -130,14 +130,14 @@ export function DayViewCalendar() {
 
       {/* Progress Summary */}
       {todaySummary && (
-        <Card className="mb-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <CardContent className="p-4">
+        <Card className="mb-4 sm:mb-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   {todaySummary.completedGoals} of {todaySummary.totalGoals} completed
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   {todaySummary.progressPercentage}% progress
                 </div>
               </div>
@@ -155,16 +155,16 @@ export function DayViewCalendar() {
 
               return (
                 <div key={slot.time} className="flex">
-                  {/* Time Column */}
-                  <div className="w-24 p-4 text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700 flex items-start">
-                    <Clock className="h-4 w-4 mr-2 mt-0.5" />
-                    {slot.displayTime}
+                  {/* Time Column - More compact on mobile */}
+                  <div className="w-16 sm:w-20 md:w-24 p-2 sm:p-3 md:p-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700 flex items-start">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 mt-0.5 flex-shrink-0" />
+                    <span className="leading-tight">{slot.displayTime}</span>
                   </div>
 
-                  {/* Content Column */}
-                  <div className="flex-1 p-4 min-h-[80px]">
+                  {/* Content Column - More compact on mobile */}
+                  <div className="flex-1 p-2 sm:p-3 md:p-4 min-h-[60px] sm:min-h-[70px] md:min-h-[80px]">
                     {goalsForSlot.length > 0 ? (
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {goalsForSlot.map((goal) => (
                           <GoalEntryCard
                             key={goal.id}
@@ -175,7 +175,7 @@ export function DayViewCalendar() {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-gray-400 dark:text-gray-500 text-sm italic">
+                      <div className="text-gray-400 dark:text-gray-500 text-xs sm:text-sm italic">
                         No goals scheduled
                       </div>
                     )}

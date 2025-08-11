@@ -4,16 +4,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Target, Calendar, Settings, Users, Brain, Menu, X } from 'lucide-react'
+import { Home, Calendar, Settings, Users, Menu, X } from 'lucide-react'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { InstallButton } from '@/components/pwa/install-button'
 
 const navigation = [
   { name: 'Today', href: '/today', icon: Calendar },
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Goals', href: '/goals', icon: Target },
-  { name: 'Support Team', href: '/support-team', icon: Users },
-  { name: 'AI Coach', href: '/ai-coach', icon: Brain },
+  { name: 'Support Circle', href: '/support-circle', icon: Users },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
@@ -80,7 +78,7 @@ export function DashboardNav() {
                 <InstallButton
                   variant="outline"
                   size="default"
-                  className="w-full justify-start"
+                  className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-800 border-gray-600 hover:border-gray-500"
                 >
                   Install MyDataday
                 </InstallButton>

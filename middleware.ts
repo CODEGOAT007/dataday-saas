@@ -63,17 +63,26 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Reason: Define protected and auth routes
-  const protectedRoutes = ['/dashboard', '/goals', '/logs', '/settings', '/admin', '/today']
+  const protectedRoutes = ['/dashboard', '/logs', '/settings', '/today', '/support-team']
   const authRoutes = ['/auth/login', '/auth/signup', '/auth/callback']
   const publicRoutes = ['/', '/about', '/pricing', '/contact']
+  const adminRoutes = ['/admin'] // Admin routes use separate authentication
 
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   )
-  const isAuthRoute = authRoutes.some(route => 
+  const isAuthRoute = authRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   )
   const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname)
+  const isAdminRoute = adminRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // Reason: Skip regular auth for admin routes (they have separate authentication)
+  if (isAdminRoute) {
+    return response
+  }
 
   // Reason: Redirect unauthenticated users from protected routes
   if (isProtectedRoute && !user) {
@@ -92,6 +101,11 @@ export async function middleware(request: NextRequest) {
   // Reason: Redirect authenticated users from landing page to today page
   if (request.nextUrl.pathname === '/' && user) {
     return NextResponse.redirect(new URL('/today', request.url))
+  }
+
+  // Reason: Redirect /support-team to support circle management page
+  if (request.nextUrl.pathname === '/support-team' && user) {
+    return NextResponse.redirect(new URL('/support-circle', request.url))
   }
 
   // Reason: Check if user has completed onboarding

@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Camera, Mic, Upload, FileText, X, Star } from 'lucide-react'
 import { useDailyLogs } from '@/hooks/use-daily-logs'
+import { VoiceRecorder } from '@/components/goals/voice-recorder'
 import type { Database } from '@/types/supabase'
 
 type Goal = Database['public']['Tables']['goals']['Row']
@@ -29,14 +30,15 @@ export function ProofSubmissionModal({
 }: ProofSubmissionModalProps) {
   const [notes, setNotes] = useState(existingLog?.notes || '')
   const [progressRating, setProgressRating] = useState(existingLog?.mood_rating || 0)
+  const [voiceUrl, setVoiceUrl] = useState(existingLog?.voice_url || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { logProgress } = useDailyLogs(targetDate)
 
   // Reason: Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!notes.trim()) {
-      alert('Please provide detailed notes about your progress as proof.')
+    if (!notes.trim() && !voiceUrl) {
+      alert('Please provide either detailed notes or a voice recording as proof.')
       return
     }
     if (progressRating === 0) {
@@ -75,6 +77,7 @@ export function ProofSubmissionModal({
     if (!isSubmitting) {
       setNotes(existingLog?.notes || '')
       setProgressRating(existingLog?.mood_rating || 0)
+      setVoiceUrl(existingLog?.voice_url || '')
       onClose()
     }
   }
@@ -156,16 +159,29 @@ export function ProofSubmissionModal({
             </p>
           </div>
 
-          {/* Future: Photo/Video/Voice Upload Placeholders */}
-          <div className="border-2 border-dashed border-gray-200 rounded-lg p-4">
+          {/* Voice Recording */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Voice Recording (Optional)
+            </Label>
+            <VoiceRecorder
+              onRecordingComplete={(url) => setVoiceUrl(url)}
+            />
+            {voiceUrl && (
+              <p className="text-xs text-green-600 dark:text-green-400">
+                ✓ Voice recording attached
+              </p>
+            )}
+          </div>
+
+          {/* Future: Photo/Video Upload Placeholders */}
+          <div className="border-2 border-dashed border-gray-200 rounded-lg p-3">
             <div className="text-center text-gray-500">
               <div className="flex justify-center gap-4 mb-2">
-                <Camera className="h-6 w-6" />
-                <Mic className="h-6 w-6" />
-                <Upload className="h-6 w-6" />
+                <Camera className="h-5 w-5" />
+                <Upload className="h-5 w-5" />
               </div>
-              <p className="text-sm">Photo, video, and voice proof coming soon!</p>
-              <p className="text-xs">For now, detailed notes serve as your proof.</p>
+              <p className="text-xs">Photo and video proof coming soon!</p>
             </div>
           </div>
 

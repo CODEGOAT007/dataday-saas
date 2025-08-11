@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Target, Twitter, Github, Linkedin, Mail } from 'lucide-react'
+import { Twitter, Github, Linkedin, Mail } from 'lucide-react'
 import { InstallButton } from '@/components/pwa/install-button'
+import { Logo11_CalendarCheck } from '@/components/ui/mydataday-logo'
 
 const navigation = {
   product: [
@@ -56,7 +57,7 @@ const social = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-white border-t border-gray-200" aria-labelledby="footer-heading">
+    <footer className="border-t" style={{background: 'var(--background)', borderColor: 'var(--border-muted)'}} aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
@@ -64,20 +65,20 @@ export function SiteFooter() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Target className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-slate-900 rounded-lg flex items-center justify-center">
+                <Logo11_CalendarCheck variant="white" size="md" />
               </div>
-              <span className="text-xl font-bold text-gray-900">Dataday</span>
+              <span className="text-xl font-bold" style={{color: 'var(--foreground)'}}>MyDataDay</span>
             </div>
-            <p className="text-sm leading-6 text-gray-600">
+            <p className="text-sm leading-6" style={{color: 'var(--silver)'}}>
               The universal life progress system that makes sure your goals happen.
-              Track daily progress, get AI coaching, and activate your social accountability network.
+              Track daily progress, stay accountable, and achieve consistent results.
             </p>
             <div className="space-y-4">
               <InstallButton
                 variant="outline"
                 size="sm"
-                className="w-fit"
+                className="w-fit border-white/20 text-white hover:bg-white/10"
               >
                 Install MyDataday
               </InstallButton>
@@ -86,7 +87,10 @@ export function SiteFooter() {
                   <a
                     key={item.name}
                     href={item.href}
-                    className="text-gray-400 hover:text-gray-500 transition-colors"
+                    className="transition-colors duration-300"
+                    style={{color: 'var(--silver-dark)'}}
+                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--bright-blue)'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--silver-dark)'}
                   >
                     <span className="sr-only">{item.name}</span>
                     <item.icon className="h-6 w-6" aria-hidden="true" />
@@ -98,13 +102,14 @@ export function SiteFooter() {
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">Product</h3>
+                <h3 className="text-sm font-semibold leading-6" style={{color: 'var(--foreground)'}}>Product</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.product.map((item) => (
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-sm leading-6 transition-colors duration-300 hover:text-blue-400"
+                        style={{color: 'var(--silver)'}}
                       >
                         {item.name}
                       </Link>
@@ -113,13 +118,14 @@ export function SiteFooter() {
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">Support</h3>
+                <h3 className="text-sm font-semibold leading-6" style={{color: 'var(--foreground)'}}>Support</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.support.map((item) => (
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-sm leading-6 transition-colors duration-300 hover:text-blue-400"
+                        style={{color: 'var(--silver)'}}
                       >
                         {item.name}
                       </Link>
@@ -130,13 +136,14 @@ export function SiteFooter() {
             </div>
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">Company</h3>
+                <h3 className="text-sm font-semibold leading-6" style={{color: 'var(--foreground)'}}>Company</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.company.map((item) => (
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-sm leading-6 transition-colors duration-300 hover:text-blue-400"
+                        style={{color: 'var(--silver)'}}
                       >
                         {item.name}
                       </Link>
@@ -145,13 +152,14 @@ export function SiteFooter() {
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">Legal</h3>
+                <h3 className="text-sm font-semibold leading-6" style={{color: 'var(--foreground)'}}>Legal</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   {navigation.legal.map((item) => (
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-sm leading-6 transition-colors duration-300 hover:text-blue-400"
+                        style={{color: 'var(--silver)'}}
                       >
                         {item.name}
                       </Link>
@@ -162,13 +170,13 @@ export function SiteFooter() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
+        <div className="mt-16 border-t pt-8 sm:mt-20 lg:mt-24" style={{borderColor: 'var(--border-muted)'}}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs leading-5 text-gray-500">
-              &copy; 2024 Dataday, Inc. All rights reserved.
+            <p className="text-xs leading-5" style={{color: 'var(--silver-dark)'}}>
+              &copy; 2024 MyDataDay, Inc. All rights reserved.
             </p>
             <div className="mt-4 sm:mt-0">
-              <p className="text-xs leading-5 text-gray-500">
+              <p className="text-xs leading-5" style={{color: 'var(--silver-dark)'}}>
                 Made with ❤️ for people who want to achieve their goals
               </p>
             </div>

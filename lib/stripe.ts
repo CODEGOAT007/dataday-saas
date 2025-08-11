@@ -18,16 +18,61 @@ const stripe = (stripeSecretKey && !stripeSecretKey.includes('placeholder')) ? n
 
 export { stripe }
 
+// Pricing tier types
+interface BasePricingTier {
+  id: string
+  name: string
+  price: number
+  priceId: string
+  features: string[]
+  limits: {
+    goals: number | string
+    emergencySupportTeamMembers: number
+    planningCalls: number
+    escalationDelay: number
+  }
+  hidden?: boolean
+  popular?: boolean
+}
+
+interface BetaPricingTier extends BasePricingTier {
+  betaPrice: number
+  betaPriceId: string
+}
+
 // Pricing tier configuration
 export const PRICING_TIERS = {
+  essential: {
+    id: 'essential',
+    name: 'Essential',
+    price: 350,
+    priceId: process.env.STRIPE_ESSENTIAL_PRICE_ID!,
+    hidden: true, // Hidden tier for mentor conversion tool
+    features: [
+      'Goal tracking & progress monitoring',
+      'Support team activation (2+ days missed)',
+      'Basic goal tracking',
+      'Email support',
+      'Mobile PWA app',
+      'Milestone celebrations'
+    ],
+    limits: {
+      goals: 3,
+      emergencySupportTeamMembers: 3,
+      planningCalls: 0,
+      escalationDelay: 2 // days
+    }
+  },
   basic: {
     id: 'basic',
     name: 'Basic',
-    price: 35,
+    price: 350, // Beta public price
+    betaPrice: 35, // Mentor code price
     priceId: process.env.STRIPE_BASIC_PRICE_ID!,
+    betaPriceId: process.env.STRIPE_BASIC_BETA_PRICE_ID!,
     features: [
-      'AI Progress Support Team',
-      'Emergency Support Team activation (2+ days missed)',
+      'Goal tracking & progress monitoring',
+      'Support team activation (2+ days missed)',
       'Basic goal tracking',
       'Email support',
       'Mobile PWA app',
@@ -43,13 +88,15 @@ export const PRICING_TIERS = {
   pro: {
     id: 'pro',
     name: 'Pro',
-    price: 65,
+    price: 650, // Beta public price
+    betaPrice: 65, // Mentor code price
     priceId: process.env.STRIPE_PRO_PRICE_ID!,
+    betaPriceId: process.env.STRIPE_PRO_BETA_PRICE_ID!,
     popular: true,
     features: [
       'Everything in Basic',
-      'Weekly planning calls (human Progress Support Team)',
-      'Priority Emergency Support Team activation (1 day missed)',
+      'Weekly planning calls',
+      'Priority support team activation (1 day missed)',
       'Advanced analytics',
       'Goal strategy optimization',
       'Priority support'
@@ -64,14 +111,16 @@ export const PRICING_TIERS = {
   premium: {
     id: 'premium',
     name: 'Premium',
-    price: 120,
+    price: 1200, // Beta public price
+    betaPrice: 120, // Mentor code price
     priceId: process.env.STRIPE_PREMIUM_PRICE_ID!,
+    betaPriceId: process.env.STRIPE_PREMIUM_BETA_PRICE_ID!,
     features: [
       'Everything in Pro',
       'Bi-weekly planning calls',
-      'Same-day Emergency Support Team activation',
+      'Same-day support team activation',
       'Custom goal strategies',
-      'Advanced AI personas',
+      'Advanced coaching features',
       'Personal success tracking'
     ],
     limits: {
@@ -84,14 +133,16 @@ export const PRICING_TIERS = {
   elite: {
     id: 'elite',
     name: 'Elite',
-    price: 200,
+    price: 2000, // Beta public price
+    betaPrice: 200, // Mentor code price
     priceId: process.env.STRIPE_ELITE_PRICE_ID!,
+    betaPriceId: process.env.STRIPE_ELITE_BETA_PRICE_ID!,
     features: [
       'Everything in Premium',
       'Weekly 1:1 coaching calls',
-      'Immediate Emergency Support Team activation',
+      'Immediate support team activation',
       'Personal success manager',
-      'Custom AI training',
+      'Custom coaching strategies',
       'White-glove onboarding'
     ],
     limits: {
@@ -101,18 +152,47 @@ export const PRICING_TIERS = {
       escalationDelay: 0 // immediate
     }
   }
-} as const
+}
 
 export type PricingTierId = keyof typeof PRICING_TIERS
-export type PricingTier = typeof PRICING_TIERS[PricingTierId]
+export type PricingTier = BasePricingTier | BetaPricingTier
 
 // Helper functions
 export function getPricingTier(tierId: string): PricingTier | null {
   return PRICING_TIERS[tierId as PricingTierId] || null
 }
 
-export function getAllPricingTiers(): PricingTier[] {
-  return Object.values(PRICING_TIERS)
+export function getAllPricingTiers(includeHidden = false): PricingTier[] {
+  const tiers = Object.values(PRICING_TIERS) as PricingTier[]
+  return includeHidden ? tiers : tiers.filter(tier => (tier as any).hidden !== true)
+}
+
+export function getPublicPricingTiers(): PricingTier[] {
+  return getAllPricingTiers(false)
+}
+
+export function getHiddenTiers(): PricingTier[] {
+  return (Object.values(PRICING_TIERS) as PricingTier[]).filter(tier => (tier as any).hidden === true)
+}
+
+export function getPriceForTier(tierId: string, isBeta = false): number {
+  const tier = getPricingTier(tierId)
+  if (!tier) return 0
+
+  if (isBeta && 'betaPrice' in tier) {
+    return tier.betaPrice
+  }
+  return tier.price
+}
+
+export function getPriceIdForTier(tierId: string, isBeta = false): string | null {
+  const tier = getPricingTier(tierId)
+  if (!tier) return null
+
+  if (isBeta && 'betaPriceId' in tier) {
+    return tier.betaPriceId
+  }
+  return tier.priceId
 }
 
 export function canUserAccessFeature(userTier: string, requiredTier: PricingTierId): boolean {

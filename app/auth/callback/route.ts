@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
   const redirectTo = requestUrl.searchParams.get('redirectTo') || '/today'
+  const isJourneyFlow = redirectTo.startsWith('/journey/live/')
 
   if (code) {
     const cookieStore = cookies()
@@ -47,14 +48,22 @@ export async function GET(request: NextRequest) {
           return NextResponse.redirect(new URL('/auth/login?error=profile_creation_failed', request.url))
         }
 
-        // Reason: New user should go to onboarding
+        // Reason: If this is the guided journey flow, go there first; otherwise onboarding
+        if (isJourneyFlow) {
+          return NextResponse.redirect(new URL(redirectTo, request.url))
+        }
         return NextResponse.redirect(new URL('/onboarding', request.url))
       } else if (profileError) {
         console.error('Error fetching user profile:', profileError)
         return NextResponse.redirect(new URL('/auth/login?error=profile_fetch_failed', request.url))
       }
 
-      // Reason: Check if user has completed onboarding
+      // Reason: If this is the guided journey flow, honor it regardless of onboarding
+      if (isJourneyFlow) {
+        return NextResponse.redirect(new URL(redirectTo, request.url))
+      }
+
+      // Reason: Otherwise, check onboarding status
       if (!profile?.onboarding_completed_at) {
         return NextResponse.redirect(new URL('/onboarding', request.url))
       }
