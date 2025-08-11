@@ -26,11 +26,11 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useEmergencySupportTeam } from '@/hooks/use-emergency-support-team'
+import { useSupportCircle } from '@/hooks/use-support-circle'
 import { useAuth } from '@/hooks/use-auth'
-import type { EmergencySupportTeamInsert, RelationshipType, ContactMethod } from '@/types'
+import type { SupportCircleInsert, RelationshipType, ContactMethod } from '@/types'
 
-interface EmergencySupportTeamMember {
+interface SupportCircleMemberForm {
   id: string
   name: string
   relationship: RelationshipType | ''
@@ -39,10 +39,10 @@ interface EmergencySupportTeamMember {
   preferred_contact_method: ContactMethod | ''
 }
 
-export function EmergencySupportTeamSetup() {
+export function SupportCircleSetup() {
   const { user } = useAuth()
-  const { addMultipleMembers, isAddingMultiple } = useEmergencySupportTeam()
-  const [members, setMembers] = useState<EmergencySupportTeamMember[]>([
+  const { addMultipleMembers, isAddingMultiple } = useSupportCircle()
+  const [members, setMembers] = useState<SupportCircleMemberForm[]>([
     { id: '1', name: '', relationship: '', phone: '', email: '', preferred_contact_method: '' }
   ])
   const [currentStep, setCurrentStep] = useState<'intro' | 'setup' | 'consent' | 'complete'>('intro')
@@ -70,13 +70,13 @@ export function EmergencySupportTeamSetup() {
     }
   }
 
-  const updateMember = (id: string, field: keyof EmergencySupportTeamMember, value: string) => {
+  const updateMember = (id: string, field: keyof SupportCircleMemberForm, value: string) => {
     setMembers(members.map(member => 
       member.id === id ? { ...member, [field]: value } : member
     ))
   }
 
-  const isValidMember = (member: EmergencySupportTeamMember) => {
+  const isValidMember = (member: SupportCircleMemberForm) => {
     return member.name.trim() && 
            member.relationship && 
            member.preferred_contact_method &&
@@ -92,7 +92,7 @@ export function EmergencySupportTeamSetup() {
 
     try {
       // Convert to the format expected by Supabase
-      const membersToInsert: EmergencySupportTeamInsert[] = validMembers.map(member => ({
+      const membersToInsert: SupportCircleInsert[] = validMembers.map(member => ({
         name: member.name.trim(),
         relationship: member.relationship as RelationshipType,
         phone: member.phone.trim() || null,
@@ -114,7 +114,7 @@ export function EmergencySupportTeamSetup() {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userId: user.id }),
+            body: JSON.stringify({}), // User ID comes from authentication
           })
         } catch (error) {
           console.error('Error sending consent requests:', error)
@@ -169,7 +169,7 @@ export function EmergencySupportTeamSetup() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-3xl font-bold text-green-600">90%+</div>
-              <div className="text-sm text-green-700">Success rate with Emergency Support Team</div>
+              <div className="text-sm text-green-700">Success rate with Support Circle</div>
             </div>
             <div className="text-center p-4 bg-red-50 rounded-lg">
               <div className="text-3xl font-bold text-red-600">20%</div>
@@ -183,7 +183,7 @@ export function EmergencySupportTeamSetup() {
               size="lg"
               className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
             >
-              Set Up My Emergency Support Team
+              Set Up My Support Circle
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -198,7 +198,7 @@ export function EmergencySupportTeamSetup() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-6 w-6" />
-            Add Your Emergency Support Team
+            Add Your Support Circle
           </CardTitle>
           <CardDescription>
             Add 1-5 people who care about your success. We'll only contact them if you miss goals for 2+ days.
@@ -372,7 +372,7 @@ export function EmergencySupportTeamSetup() {
                 <strong>We'll contact each person</strong> via their preferred method to:
               </p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>Explain they've been added to your Emergency Support Team</li>
+                <li>Explain they've been added to your Support Circle</li>
                 <li>Get their explicit consent to receive notifications</li>
                 <li>Let them opt out if they prefer not to participate</li>
                 <li>Explain exactly when and how they'll be contacted</li>
@@ -381,7 +381,7 @@ export function EmergencySupportTeamSetup() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-medium">Your Emergency Support Team:</h4>
+            <h4 className="font-medium">Your Support Circle:</h4>
             {validMembers.map((member, index) => (
               <div key={member.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">

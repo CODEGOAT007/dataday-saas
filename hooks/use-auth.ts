@@ -36,15 +36,21 @@ export function useAuth() {
 
   // Reason: Mutation for user signup
   const signUpMutation = useMutation({
-    mutationFn: async ({ email, password, fullName }: { 
+    mutationFn: async ({ email, password, fullName, redirectTo }: {
       email: string
       password: string
-      fullName: string 
+      fullName: string
+      redirectTo?: string
     }) => {
+      // Reason: Ensure email confirmation brings user back to intended next step in both local and prod
+      const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || 'https://mydataday.app')
+      const callbackUrl = redirectTo ? `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}` : `${origin}/auth/callback`
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: callbackUrl,
           data: {
             full_name: fullName,
           },
@@ -97,6 +103,15 @@ export function useAuth() {
     },
     onSuccess: () => {
       // Reason: Clear auth state and redirect to home
+      queryClient.setQueryData(['auth', 'user'], null)
+      queryClient.invalidateQueries({ queryKey: ['auth'] })
+      router.push('/')
+      router.refresh()
+    },
+    onError: (error) => {
+      // Reason: Log logout errors but still clear local state
+      console.error('Logout error:', error)
+      // Clear local state even if server logout fails
       queryClient.setQueryData(['auth', 'user'], null)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
       router.push('/')

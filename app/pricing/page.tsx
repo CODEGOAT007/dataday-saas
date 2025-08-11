@@ -25,13 +25,24 @@ export default function PricingPage() {
 
         {/* Hero Section */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-sm font-medium mb-6">
+            🚀 BETA ACCESS - Limited Time
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Choose Your Success Plan
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            The only platform that activates your real-life support network for 90%+ goal achievement rates. 
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            The only platform that activates your real-life support network for 90%+ goal achievement rates.
             Choose the level of support that matches your ambition.
           </p>
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
+            <p className="text-green-800 font-medium">
+              🎯 <strong>Beta Special:</strong> Get lifetime access at these rates with a mentor code + 1 free month to try risk-free!
+            </p>
+            <p className="text-sm text-green-600 mt-2">
+              Pause and restart anytime. Lock in these prices forever.
+            </p>
+          </div>
 
           {/* Value Props */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12">

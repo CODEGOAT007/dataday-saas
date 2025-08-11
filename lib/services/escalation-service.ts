@@ -4,7 +4,7 @@ import type {
   User,
   Goal,
   DailyLog,
-  EmergencySupportTeamMember,
+  SupportCircleMember,
   EscalationLog,
   EscalationLogInsert,
   EscalationType

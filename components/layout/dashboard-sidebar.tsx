@@ -3,21 +3,21 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Target, Calendar, Settings, Users, Brain } from 'lucide-react'
+import { Home, Calendar, Settings, Users } from 'lucide-react'
 import { LogoutButton } from '@/components/auth/logout-button'
 import { ProfileAvatar } from '@/components/ui/profile-avatar'
+import { useAuth } from '@/hooks/use-auth'
 
 const navigation = [
   { name: 'Today', href: '/today', icon: Calendar },
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Goals', href: '/goals', icon: Target },
-  { name: 'Support Team', href: '/support-team', icon: Users },
-  { name: 'AI Coach', href: '/ai-coach', icon: Brain },
+  { name: 'Support Circle', href: '/support-circle', icon: Users },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const { user, isLoading } = useAuth()
 
   return (
     <div className="flex flex-col h-full bg-gray-900 border-r border-gray-800">
@@ -56,10 +56,10 @@ export function DashboardSidebar() {
           <ProfileAvatar size="md" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              User Name
+              {isLoading ? 'Loading...' : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User')}
             </p>
             <p className="text-xs text-gray-400 truncate">
-              user@example.com
+              {isLoading ? 'Loading...' : (user?.email || 'No email')}
             </p>
           </div>
         </div>

@@ -29,13 +29,13 @@ export function GoalEntryCard({ goal, targetDate, scheduledTime }: GoalEntryCard
   // Reason: Get category color for visual distinction
   const getCategoryColor = (category: string) => {
     const colors = {
-      health: 'bg-green-100 text-green-800',
-      education: 'bg-blue-100 text-blue-800',
-      career: 'bg-purple-100 text-purple-800',
-      personal: 'bg-yellow-100 text-yellow-800',
-      financial: 'bg-emerald-100 text-emerald-800',
-      relationships: 'bg-pink-100 text-pink-800',
-      other: 'bg-gray-100 text-gray-800'
+      health: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      education: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      career: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      personal: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+      financial: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+      relationships: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+      other: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
     }
     return colors[category as keyof typeof colors] || colors.other
   }
@@ -43,9 +43,9 @@ export function GoalEntryCard({ goal, targetDate, scheduledTime }: GoalEntryCard
   return (
     <>
       <Card className={`transition-all duration-200 ${
-        isCompleted 
-          ? 'bg-green-50 border-green-200 shadow-sm' 
-          : 'bg-white border-gray-200 hover:shadow-md'
+        isCompleted
+          ? 'bg-green-50 border-green-200 shadow-sm dark:bg-green-900/20 dark:border-green-700'
+          : 'bg-white border-gray-200 hover:shadow-md dark:bg-gray-800 dark:border-gray-700'
       }`}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
@@ -54,7 +54,7 @@ export function GoalEntryCard({ goal, targetDate, scheduledTime }: GoalEntryCard
               <div className="flex items-start gap-3 mb-2">
                 <div className="flex-1">
                   <h3 className={`font-medium text-sm ${
-                    isCompleted ? 'line-through text-gray-600' : 'text-gray-900'
+                    isCompleted ? 'line-through text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-white'
                   }`}>
                     {goal.title}
                   </h3>
@@ -62,7 +62,7 @@ export function GoalEntryCard({ goal, targetDate, scheduledTime }: GoalEntryCard
                     <Badge variant="secondary" className={getCategoryColor(goal.category)}>
                       {goal.category}
                     </Badge>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                       <Target className="h-3 w-3" />
                       {goal.target_frequency}x {goal.frequency_type}
                     </span>
@@ -72,22 +72,22 @@ export function GoalEntryCard({ goal, targetDate, scheduledTime }: GoalEntryCard
                 {/* Status Icon */}
                 <div className="flex-shrink-0">
                   {isCompleted ? (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                   ) : (
-                    <Clock className="h-5 w-5 text-gray-400" />
+                    <Clock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   )}
                 </div>
               </div>
 
               {/* Scheduled Time */}
-              <div className="text-xs text-gray-500 mb-3 flex items-center gap-1">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 Scheduled for {scheduledTime}
               </div>
 
               {/* Proof Status */}
               {isCompleted && hasProof && (
-                <div className="text-xs text-green-600 mb-3 flex items-center gap-1">
+                <div className="text-xs text-green-600 dark:text-green-400 mb-3 flex items-center gap-1">
                   <CheckCircle className="h-3 w-3" />
                   Proof submitted
                 </div>

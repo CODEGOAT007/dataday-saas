@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MyDataDayLogo } from '@/components/ui/mydataday-logo'
+import { MyDataDayLogo, Logo11_CalendarCheck } from '@/components/ui/mydataday-logo'
 import {
   Menu,
   X,
@@ -15,7 +15,7 @@ import {
   ChevronDown
 } from 'lucide-react'
 import { InstallButton } from '@/components/pwa/install-button'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -27,26 +27,20 @@ const navigation = [
 
 const features = [
   {
-    name: 'Social Accountability',
-    description: 'Connect with family & friends',
-    href: '#features',
-    icon: Users,
-  },
-  {
-    name: 'AI Coaching',
-    description: 'Personalized daily support',
-    href: '#features',
-    icon: Brain,
-  },
-  {
     name: 'Goal Tracking',
     description: 'Track progress & habits',
     href: '#features',
     icon: Target,
   },
   {
-    name: 'Human Support',
-    description: '24/7 backup assistance',
+    name: 'Stay Accountable',
+    description: 'Connect with people who care',
+    href: '#features',
+    icon: Users,
+  },
+  {
+    name: 'Smart Reminders',
+    description: 'Never miss your goals',
     href: '#features',
     icon: Shield,
   },
@@ -56,18 +50,40 @@ export function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [featuresOpen, setFeaturesOpen] = useState(false)
 
+  // Reason: Close mobile menu on ESC key press for better accessibility
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false)
+        setFeaturesOpen(false)
+      }
+    }
+
+    if (mobileMenuOpen || featuresOpen) {
+      document.addEventListener('keydown', handleEscape)
+      // Reason: Prevent body scroll when menu is open
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileMenuOpen, featuresOpen])
+
   return (
-    <header className="absolute inset-x-0 top-0 z-50 bg-gray-900/98 backdrop-blur-md border-b border-gray-700">
+    <>
+    <header className="absolute inset-x-0 top-0 z-50 border-b" style={{background: 'var(--background)', borderColor: 'var(--border-muted)'}}>
       <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         {/* Logo */}
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5">
-            <MyDataDayLogo
-              variant="white"
-              size="md"
-              logoType="logo11"
-              showText={true}
-            />
+          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-slate-900 rounded-lg flex items-center justify-center">
+              <Logo11_CalendarCheck variant="white" size="md" />
+            </div>
+            <span className="text-xl font-bold text-white">MyDataDay</span>
           </Link>
         </div>
 
@@ -117,14 +133,7 @@ export function SiteHeader() {
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-2 divide-x divide-gray-700 bg-gray-700">
-                  <a
-                    href="/demo"
-                    className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-white hover:bg-gray-600"
-                  >
-                    <Target className="h-5 w-5 flex-none text-gray-300" />
-                    Try Demo
-                  </a>
+                <div className="bg-gray-700">
                   <a
                     href="/dashboard"
                     className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-white hover:bg-gray-600"
@@ -162,81 +171,8 @@ export function SiteHeader() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden">
-          <div className="fixed inset-0 z-10" />
-          <div className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-700/50">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="-m-1.5 p-1.5">
-                <MyDataDayLogo
-                  variant="white"
-                  size="md"
-                  logoType="logo11"
-                  showText={true}
-                />
-              </Link>
-              <button
-                type="button"
-                className="-m-2.5 rounded-md p-2.5 text-gray-300 hover:text-white"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <span className="sr-only">Close menu</span>
-                <X className="h-6 w-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="mt-6 flow-root">
-              <div className="-my-6 divide-y divide-gray-700/50">
-                <div className="space-y-2 py-6">
-                  <div className="-mx-3">
-                    <div className="mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white">
-                      Features
-                    </div>
-                    <div className="mt-2 space-y-2">
-                      {features.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-300 hover:bg-gray-800 hover:text-white"
-                        >
-                          {item.name}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                  {navigation.slice(1).map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-300 hover:bg-gray-800 hover:text-white"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
-                <div className="py-6 space-y-4">
-                  <InstallButton
-                    variant="outline"
-                    className="w-full"
-                    showIcon={true}
-                  >
-                    Install MyDataday
-                  </InstallButton>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href="/auth/login">Sign in</Link>
-                  </Button>
-                  <Button className="w-full" asChild>
-                    <Link href="/auth/signup">
-                      Get Started
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
+
 
       {/* Click outside to close features dropdown */}
       {featuresOpen && (
@@ -246,5 +182,94 @@ export function SiteHeader() {
         />
       )}
     </header>
+
+    {/* Mobile menu - positioned outside header to avoid z-index conflicts */}
+    {mobileMenuOpen && (
+      <div className="lg:hidden">
+        {/* Backdrop overlay */}
+        <div
+          className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+        {/* Menu panel */}
+        <div className="fixed inset-y-0 right-0 z-[9999] w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-700/50 shadow-2xl transform transition-transform duration-300 ease-in-out">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-r from-slate-700 to-slate-900 rounded-lg flex items-center justify-center">
+                <Logo11_CalendarCheck variant="white" size="md" />
+              </div>
+              <span className="text-xl font-bold text-white">MyDataDay</span>
+            </Link>
+            <button
+              type="button"
+              className="-m-2.5 rounded-md p-2.5 text-gray-300 hover:text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="sr-only">Close menu</span>
+              <X className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="mt-6 flow-root">
+            <div className="-my-6 divide-y divide-gray-700/50">
+              <div className="space-y-2 py-6">
+                <div className="-mx-3">
+                  <div className="mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white">
+                    Features
+                  </div>
+                  <div className="mt-2 space-y-2">
+                    {features.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-300 hover:bg-gray-800 hover:text-white"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <div className="flex items-center">
+                          <item.icon className="h-4 w-4 mr-3" />
+                          <div>
+                            <div className="font-semibold">{item.name}</div>
+                            <div className="text-xs text-gray-400">{item.description}</div>
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+              <div className="py-6 space-y-2">
+                <InstallButton
+                  variant="outline"
+                  className="w-full"
+                  showIcon={true}
+                >
+                  Install MyDataday
+                </InstallButton>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/auth/login">Sign in</Link>
+                </Button>
+                <Button className="w-full" asChild>
+                  <Link href="/auth/signup">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }

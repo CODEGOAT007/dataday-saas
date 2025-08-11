@@ -1,13 +1,13 @@
 'use client'
 
-interface EmergencySupportTeamCardProps {
+interface SupportCircleCardProps {
   goalId: string
 }
 
-export function EmergencySupportTeamCard({ goalId }: EmergencySupportTeamCardProps) {
+export function SupportCircleCard({ goalId }: SupportCircleCardProps) {
   return (
     <div className="text-muted-foreground">
-      Emergency support team card component placeholder for goal {goalId}
+      Support circle card component placeholder for goal {goalId}
     </div>
   )
 }

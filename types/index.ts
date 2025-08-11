@@ -4,7 +4,7 @@ import type { Database } from './supabase'
 export type User = Database['public']['Tables']['users']['Row']
 export type Goal = Database['public']['Tables']['goals']['Row']
 export type DailyLog = Database['public']['Tables']['daily_logs']['Row']
-export type EmergencySupportTeamMember = Database['public']['Tables']['emergency_support_team']['Row']
+export type SupportCircleMember = Database['public']['Tables']['support_circle']['Row']
 export type EscalationLog = Database['public']['Tables']['escalation_logs']['Row']
 export type Interaction = Database['public']['Tables']['interactions']['Row']
 export type PlanningSession = Database['public']['Tables']['planning_sessions']['Row']
@@ -13,7 +13,7 @@ export type PlanningSession = Database['public']['Tables']['planning_sessions'][
 export type UserInsert = Database['public']['Tables']['users']['Insert']
 export type GoalInsert = Database['public']['Tables']['goals']['Insert']
 export type DailyLogInsert = Database['public']['Tables']['daily_logs']['Insert']
-export type EmergencySupportTeamInsert = Database['public']['Tables']['emergency_support_team']['Insert']
+export type SupportCircleInsert = Database['public']['Tables']['support_circle']['Insert']
 export type EscalationLogInsert = Database['public']['Tables']['escalation_logs']['Insert']
 export type InteractionInsert = Database['public']['Tables']['interactions']['Insert']
 export type PlanningSessionInsert = Database['public']['Tables']['planning_sessions']['Insert']
@@ -22,7 +22,7 @@ export type PlanningSessionInsert = Database['public']['Tables']['planning_sessi
 export type UserUpdate = Database['public']['Tables']['users']['Update']
 export type GoalUpdate = Database['public']['Tables']['goals']['Update']
 export type DailyLogUpdate = Database['public']['Tables']['daily_logs']['Update']
-export type EmergencySupportTeamUpdate = Database['public']['Tables']['emergency_support_team']['Update']
+export type SupportCircleUpdate = Database['public']['Tables']['support_circle']['Update']
 export type EscalationLogUpdate = Database['public']['Tables']['escalation_logs']['Update']
 export type InteractionUpdate = Database['public']['Tables']['interactions']['Update']
 export type PlanningSessionUpdate = Database['public']['Tables']['planning_sessions']['Update']
@@ -34,7 +34,7 @@ export type GoalWithLogs = Goal & {
 
 export type UserWithGoals = User & {
   goals: Goal[]
-  emergency_support_team: EmergencySupportTeamMember[]
+  emergency_support_team: SupportCircleMember[]
 }
 
 export type DailyLogWithGoal = DailyLog & {
@@ -159,7 +159,7 @@ export interface CreateLogForm {
   voiceUrl?: string
 }
 
-export interface EmergencySupportTeamForm {
+export interface SupportCircleForm {
   name: string
   relationship: RelationshipType
   phone?: string

@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 
 export function ServiceWorkerRegistration() {
   useEffect(() => {
-    // Reason: Manually register service worker to ensure PWA functionality
+    // Reason: Only register service worker in production to avoid development issues
     if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
       const registerSW = async () => {
         try {
@@ -47,6 +47,16 @@ export function ServiceWorkerRegistration() {
       }
     } else if (process.env.NODE_ENV === 'development') {
       console.log('Service Worker registration skipped in development mode')
+
+      // Reason: Unregister any existing service workers in development to prevent caching issues
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => {
+            registration.unregister()
+            console.log('Unregistered existing service worker in development mode')
+          })
+        })
+      }
     } else {
       console.log('Service Workers not supported in this browser')
     }

@@ -2,7 +2,6 @@
 
 import { Bell, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { LogoutButton } from '@/components/auth/logout-button'
 import { ProfileAvatar } from '@/components/ui/profile-avatar'
 
 export function DashboardHeader() {
@@ -36,18 +35,6 @@ export function DashboardHeader() {
           </Button>
 
           <ProfileAvatar size="md" />
-
-          {/* Logout button - always visible but icon-only on mobile */}
-          <div className="sm:block">
-            <LogoutButton
-              variant="ghost"
-              size="icon"
-              showIcon={true}
-              className="sm:w-auto sm:px-3"
-            >
-              <span className="hidden sm:inline ml-2">Sign Out</span>
-            </LogoutButton>
-          </div>
         </div>
       </div>
     </header>

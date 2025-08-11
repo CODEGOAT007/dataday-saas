@@ -4,7 +4,7 @@ import { GoalDetails } from '@/components/goals/goal-details'
 import { GoalProgress } from '@/components/goals/goal-progress'
 import { GoalLogs } from '@/components/goals/goal-logs'
 import { GoalInsights } from '@/components/goals/goal-insights'
-import { EmergencySupportTeamCard } from '@/components/goals/emergency-support-team-card'
+import { SupportCircleCard } from '@/components/goals/emergency-support-team-card'
 
 interface GoalPageProps {
   params: {
@@ -42,7 +42,7 @@ export default function GoalPage({ params }: GoalPageProps) {
         {/* Right Column - Sidebar */}
         <div className="space-y-6">
           <GoalInsights goalId={params.id} />
-          <EmergencySupportTeamCard goalId={params.id} />
+          <SupportCircleCard goalId={params.id} />
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import React from 'react'
 interface LogoProps {
   className?: string
   variant?: 'default' | 'white' | 'dark'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 // Base circular container for all logos
@@ -14,7 +14,8 @@ const CircularBase = ({ children, className = '', variant = 'default', size = 'm
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-10 h-10',
-    lg: 'w-16 h-16'
+    lg: 'w-16 h-16',
+    xl: 'w-24 h-24'
   }
 
   const bgClasses = {
@@ -192,12 +193,19 @@ export function Logo11_CalendarCheck({ className = '', variant = 'default', size
     lg: 'w-16 h-16'
   }
 
+  const svgSizeClasses = {
+    sm: 'w-5 h-5',
+    md: 'w-7 h-7',
+    lg: 'w-12 h-12',
+    xl: 'w-20 h-20'
+  }
+
   // Always use white for the icon to ensure visibility on colored backgrounds
   const iconColor = 'text-white'
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <svg className={`w-5 h-5 ${iconColor}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg className={`${svgSizeClasses[size]} ${iconColor}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         {/* Calendar body */}
         <rect x="3" y="4" width="18" height="16" rx="2" ry="2" />
         {/* Calendar rings/hangers */}
@@ -569,7 +577,8 @@ export function MyDataDayLogo({
   const textSizeClasses = {
     sm: 'text-lg',
     md: 'text-xl',
-    lg: 'text-3xl'
+    lg: 'text-3xl',
+    xl: 'text-5xl'
   }
 
   const textColorClasses = {

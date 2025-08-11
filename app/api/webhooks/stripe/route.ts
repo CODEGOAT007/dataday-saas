@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe, STRIPE_WEBHOOK_EVENTS } from '@/lib/stripe'
-import { createServerClient } from '@/lib/supabase'
+import { createServerClient, createServiceRoleClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 import Stripe from 'stripe'
 
@@ -78,7 +78,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 
   // Create a server client (note: webhooks don't have user context)
   const cookieStore = cookies()
-  const supabase = createServerClient(cookieStore)
+  // Use service role client for webhook DB updates (no user context)
+  const supabase = createServiceRoleClient()
 
   // Update user subscription in database
   const { error } = await supabase
@@ -97,6 +98,29 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   } else {
     console.log(`Updated subscription for user ${userId} to tier ${tierId}`)
   }
+
+  // Attempt to mark related lead as card_on_file if they were payment_pending
+  try {
+    const { data: lead } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('converted_user_id', userId)
+      .eq('lead_status', 'payment_pending')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (lead?.id) {
+      await supabase
+        .from('leads')
+        .update({ lead_status: 'card_on_file', updated_at: new Date().toISOString(), converted_at: new Date().toISOString() })
+        .eq('id', lead.id)
+      console.log(`Lead ${lead.id} marked as card_on_file via webhook`)
+    }
+  } catch (err) {
+    console.error('Error updating lead from webhook:', err)
+  }
+
 }
 
 async function handleSubscriptionCancellation(subscription: Stripe.Subscription) {
@@ -108,7 +132,7 @@ async function handleSubscriptionCancellation(subscription: Stripe.Subscription)
   }
 
   const cookieStore = cookies()
-  const supabase = createServerClient(cookieStore)
+  const supabase = createServiceRoleClient()
 
   // Update user to basic tier (free tier)
   const { error } = await supabase
@@ -132,7 +156,7 @@ async function handleSubscriptionCancellation(subscription: Stripe.Subscription)
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   // Log successful payment
   console.log(`Payment succeeded for invoice ${invoice.id}`)
-  
+
   // Could add logic here to:
   // - Send thank you email
   // - Update payment history
@@ -142,7 +166,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   // Log failed payment
   console.log(`Payment failed for invoice ${invoice.id}`)
-  
+
   // Could add logic here to:
   // - Send payment retry email
   // - Update subscription status

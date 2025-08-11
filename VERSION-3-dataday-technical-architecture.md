@@ -290,7 +290,7 @@ Primary: Next.js API Routes
   - Authentication handling
   - File uploads
   - Webhook endpoints
-  
+
 Performance Layer: Hono
   - AI chat endpoints
   - Real-time analytics
@@ -402,7 +402,7 @@ class AIService {
     new AnthropicProvider(),
     new TogetherAIProvider()
   ]
-  
+
   async generateResponse(prompt: string, priority: 'high' | 'medium' | 'low') {
     const provider = this.selectProvider(priority)
     return await provider.generateResponse(prompt)
@@ -480,6 +480,12 @@ Phase 3 (Scale):
   - Advanced analytics
 ```
 
+
+### Immediate API Improvements (Near-term)
+- Normalize phone input to digits-only at the edge
+- Upsert leads by phone to prevent duplicates (unique index + insert ... on conflict do update)
+- Capture simple `source` (e.g., tiktok_livestream) from client; skip per-video granularity for now
+
 ### Admin Dashboard Features
 ```yaml
 User Management:
@@ -532,7 +538,7 @@ Use Cases:
 // Real-time goal updates
 const useGoalUpdates = (userId: string) => {
   const [goals, setGoals] = useState<Goal[]>([])
-  
+
   useEffect(() => {
     const subscription = supabase
       .channel(`user:${userId}`)
@@ -545,10 +551,10 @@ const useGoalUpdates = (userId: string) => {
         setGoals(current => updateGoals(current, payload))
       })
       .subscribe()
-      
+
     return () => subscription.unsubscribe()
   }, [userId])
-  
+
   return goals
 }
 ```
@@ -1128,7 +1134,7 @@ Scalability:
 This technical architecture is specifically designed for Dataday's unique requirements:
 
 **✅ Human-First Operations** with AI-powered scale
-**✅ Global Performance** with edge-optimized delivery  
+**✅ Global Performance** with edge-optimized delivery
 **✅ Operational Efficiency** through Retool automation
 **✅ Cost-Effective Scaling** from startup to enterprise
 **✅ Developer Velocity** with modern tooling and practices

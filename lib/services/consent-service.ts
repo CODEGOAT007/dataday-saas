@@ -1,6 +1,11 @@
 import { createClient } from '@/lib/supabase-client'
 import { NotificationService } from './notification-service'
-import type { EmergencySupportTeamMember, User } from '@/types'
+import type { SupportCircleMember, User } from '@/types'
+
+interface ConsentUser {
+  id: string
+  full_name: string
+}
 
 const supabase = createClient()
 
@@ -10,8 +15,8 @@ export class ConsentService {
    * Send consent request to Emergency Support Team member
    */
   static async sendConsentRequest(
-    user: User, 
-    member: EmergencySupportTeamMember
+    user: ConsentUser,
+    member: SupportCircleMember
   ): Promise<{ success: boolean; error?: string }> {
     try {
       const consentUrl = `${process.env.NEXT_PUBLIC_APP_URL}/consent/${member.id}`
@@ -32,7 +37,7 @@ export class ConsentService {
       if (wasSuccessful) {
         // Update member record with consent request sent
         await supabase
-          .from('emergency_support_team')
+          .from('support_circle')
           .update({
             consent_date: new Date().toISOString(),
             consent_method: member.preferred_contact_method,
@@ -59,21 +64,21 @@ export class ConsentService {
     memberId: string, 
     consented: boolean,
     responseMethod: 'web' | 'sms' | 'email' = 'web'
-  ): Promise<{ success: boolean; member?: EmergencySupportTeamMember; error?: string }> {
+  ): Promise<{ success: boolean; member?: SupportCircleMember; error?: string }> {
     try {
       const { data: member, error: fetchError } = await supabase
-        .from('emergency_support_team')
+        .from('support_circle')
         .select('*, users(*)')
         .eq('id', memberId)
         .single()
 
       if (fetchError || !member) {
-        return { success: false, error: 'Emergency Support Team member not found' }
+        return { success: false, error: 'Support Circle member not found' }
       }
 
       // Update consent status
       const { data: updatedMember, error: updateError } = await supabase
-        .from('emergency_support_team')
+        .from('support_circle')
         .update({
           consent_given: consented,
           consent_date: new Date().toISOString(),
@@ -91,7 +96,7 @@ export class ConsentService {
       }
 
       // Send confirmation message
-      if (consented) {
+      if (consented && member.users) {
         await this.sendConsentConfirmation(member.users, member)
       }
 
@@ -107,22 +112,12 @@ export class ConsentService {
   }
 
   /**
-   * Send consent requests to all pending Emergency Support Team members for a user
+   * Send consent requests to all pending Support Circle members for a user
    */
-  static async sendAllConsentRequests(userId: string): Promise<void> {
+  static async sendAllConsentRequests(userId: string, userName?: string): Promise<void> {
     try {
-      const { data: user } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (!user) {
-        throw new Error('User not found')
-      }
-
       const { data: pendingMembers } = await supabase
-        .from('emergency_support_team')
+        .from('support_circle')
         .select('*')
         .eq('user_id', userId)
         .eq('is_active', true)
@@ -130,20 +125,26 @@ export class ConsentService {
 
       if (!pendingMembers || pendingMembers.length === 0) {
         console.log('No pending consent requests for user:', userId)
-      console.log('ConsentService: Looking for members with consent_given = null OR false')
+        console.log('ConsentService: Looking for members with consent_given = null OR false')
         return
       }
 
-      console.log(`Sending consent requests to ${pendingMembers.length} Emergency Support Team members`)
+      console.log(`Sending consent requests to ${pendingMembers.length} Support Circle members`)
+
+      // Create a simple user object with just the name we need
+      const userForMessage = {
+        id: userId,
+        full_name: userName || 'Someone you know'
+      }
 
       for (const member of pendingMembers) {
-        await this.sendConsentRequest(user, member)
+        await this.sendConsentRequest(userForMessage, member)
         // Add small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
 
       console.log('All consent requests sent successfully')
-      
+
     } catch (error) {
       console.error('Error sending consent requests:', error)
       throw error
@@ -154,8 +155,8 @@ export class ConsentService {
    * Generate consent request message
    */
   private static generateConsentMessage(
-    user: User, 
-    member: EmergencySupportTeamMember, 
+    user: ConsentUser,
+    member: SupportCircleMember,
     consentUrl: string
   ): string {
     const userName = user.full_name || 'Someone you know'
@@ -200,8 +201,13 @@ Thanks for being someone ${userName} trusts and cares about! ❤️
   /**
    * Send confirmation message after consent is given
    */
-  private static async sendConsentConfirmation(user: User, member: EmergencySupportTeamMember): Promise<void> {
-    const message = `Thank you for joining ${user.full_name || 'your friend'}'s Emergency Support Team! 🎉
+  private static async sendConsentConfirmation(user: ConsentUser | null, member: SupportCircleMember): Promise<void> {
+    if (!user) {
+      console.warn('Cannot send consent confirmation: user data is null')
+      return
+    }
+
+    const message = `Thank you for joining ${user.full_name || 'your friend'}'s Support Circle! 🎉
 
 You're now part of their success journey. Here's what to expect:
 
@@ -234,7 +240,7 @@ Thanks for being an amazing support person! 💪
     declined: number
   }> {
     const { data: members } = await supabase
-      .from('emergency_support_team')
+      .from('support_circle')
       .select('consent_given, is_active')
       .eq('user_id', userId)
 

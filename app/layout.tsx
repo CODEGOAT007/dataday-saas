@@ -3,11 +3,13 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui/toaster'
+import { Toaster as SonnerToaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { InstallPrompt } from '@/components/pwa/install-prompt'
+// import { InstallPrompt } from '@/components/pwa/install-prompt' // Removed - install options are in home page and hamburger menu
 import { DebugInstall } from '@/components/pwa/debug-install' // Re-enabled for troubleshooting
-import { ClearInstallCache } from '@/components/pwa/clear-install-cache' // Temporary debugging tool
+// import { ClearInstallCache } from '@/components/pwa/clear-install-cache' // Combined into DebugInstall
+// import { DebugToggle } from '@/components/pwa/debug-toggle' // Removed - using individual minimize buttons
 import { ServiceWorkerRegistration } from '@/components/pwa/service-worker-registration'
 import { cn } from '@/lib/utils'
 import './globals.css'
@@ -120,9 +122,14 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <Toaster />
-            <InstallPrompt />
+            <SonnerToaster
+              theme="dark"
+              position="top-right"
+              richColors
+              closeButton
+              duration={4000}
+            />
             <DebugInstall />
-            <ClearInstallCache />
             <ServiceWorkerRegistration />
           </QueryProvider>
         </ThemeProvider>

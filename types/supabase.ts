@@ -184,7 +184,7 @@ export interface Database {
           updated_at?: string
         }
       }
-      emergency_support_team: {
+      support_circle: {
         Row: {
           id: string
           user_id: string

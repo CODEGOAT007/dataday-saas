@@ -300,6 +300,31 @@ Business Intelligence:
   - Market expansion opportunities
 ```
 
+### McKinsey-Style Data Room (GenSpark Integration)
+```yaml
+Strategic Data Visualization:
+  - GenSpark-powered executive dashboards
+  - McKinsey-style slide decks with real-time data
+  - Investor-ready metrics and projections
+  - Board presentation automation
+
+Key Data Room Components:
+  - Market penetration analysis
+  - Unit economics deep-dive
+  - Competitive positioning matrices
+  - Growth trajectory modeling
+  - Risk assessment frameworks
+  - Operational efficiency metrics
+
+GenSpark Implementation:
+  - Automated slide generation from live data
+  - Professional consulting-grade visualizations
+  - Real-time KPI monitoring
+  - Scenario planning and forecasting
+  - Executive summary generation
+  - Investment thesis documentation
+```
+
 ---
 
 ## 🌍 Global Scale Preparation
@@ -338,17 +363,132 @@ Months 5-6: Database Migration & Advanced Analytics
   - Advanced Progress Support Team analytics
   - Emergency Support Team engagement pattern analysis
 
-Months 7-8: International Expansion
+Months 7-8: Corporate Benefits Integration (USA/Canada)
+  - Enterprise B2B sales infrastructure
+  - Corporate wellness program partnerships
+  - HR integration APIs and SSO
+  - Employee engagement analytics
+  - Bulk pricing and admin dashboards
+
+Months 9-10: International Expansion
   - Multi-language support
   - Regional Progress Support Team hiring
   - Local compliance (GDPR, etc.)
   - Cultural adaptation of AI personas
 
-Months 9-12: Platform Maturity
+Months 11-12: Platform Maturity
   - Advanced AI capabilities
   - Enterprise features
   - API for third-party integrations
   - White-label solutions
+```
+
+---
+
+## 🏢 Corporate Benefits Integration Strategy
+
+### B2B Enterprise Expansion (USA & Canada)
+
+**Market Opportunity:** $47B corporate wellness market with 156M employees across USA/Canada seeking meaningful benefits beyond traditional health insurance.
+
+### Corporate Benefits Model
+```yaml
+Enterprise Pricing Structure:
+  $25/employee/month - Basic Corporate Plan:
+    - Individual goal tracking with Support Circle
+    - Company-wide wellness challenges
+    - Basic analytics dashboard for HR
+    - Email support
+
+  $45/employee/month - Professional Corporate Plan:
+    - Everything in Basic
+    - Team goal collaboration features
+    - Advanced HR analytics and reporting
+    - Dedicated corporate success manager
+    - Custom company branding
+
+  $65/employee/month - Executive Corporate Plan:
+    - Everything in Professional
+    - Leadership development goal templates
+    - Executive coaching integration
+    - Advanced team performance analytics
+    - Priority support and custom integrations
+
+Volume Discounts:
+  - 100-499 employees: 10% discount
+  - 500-999 employees: 15% discount
+  - 1000+ employees: 20% discount + custom pricing
+```
+
+### Corporate Integration Features
+```yaml
+HR System Integration:
+  - Single Sign-On (SSO) with major providers
+  - HRIS integration (Workday, BambooHR, ADP)
+  - Automated employee onboarding/offboarding
+  - Compliance reporting and data export
+
+Employee Engagement:
+  - Company-wide wellness challenges
+  - Team-based goal competitions
+  - Department performance leaderboards
+  - Peer recognition and celebration systems
+
+Management Analytics:
+  - Employee engagement metrics
+  - Goal completion rates by department
+  - Wellness program ROI tracking
+  - Productivity correlation analysis
+  - Retention impact measurement
+
+Privacy & Compliance:
+  - HIPAA-compliant health goal tracking
+  - Individual privacy protection
+  - Aggregate-only reporting to employers
+  - Employee consent management
+  - Canadian PIPEDA compliance
+```
+
+### Sales & Partnership Strategy
+```yaml
+Target Market Segments:
+  - Tech companies (500-5000 employees)
+  - Financial services firms
+  - Healthcare organizations
+  - Professional services (consulting, law, accounting)
+  - Government agencies and municipalities
+
+Partnership Channels:
+  - Benefits brokers and consultants
+  - HR technology vendors
+  - Corporate wellness providers
+  - Employee assistance program (EAP) companies
+  - Insurance carriers offering wellness programs
+
+Sales Process:
+  - Pilot programs (30-90 days, 50-100 employees)
+  - ROI demonstration with engagement metrics
+  - C-suite presentations with business case
+  - HR team training and change management
+  - Phased rollout across organization
+```
+
+### Revenue Impact Projections
+```yaml
+Year 1 Corporate Goals:
+  - 10 pilot companies (average 200 employees each)
+  - $600K ARR from corporate segment
+  - 2,000 corporate users
+
+Year 2 Corporate Goals:
+  - 100 corporate clients
+  - $15M ARR from corporate segment
+  - 25,000 corporate users
+
+Year 3 Corporate Goals:
+  - 500 corporate clients
+  - $75M ARR from corporate segment
+  - 150,000 corporate users
 ```
 
 ---

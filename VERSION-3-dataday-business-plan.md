@@ -32,7 +32,7 @@
 
 **Financial Projections:**
 - Year 1: 1,000 users → $780K ARR
-- Year 3: 500,000 users → $390M ARR  
+- Year 3: 500,000 users → $390M ARR
 - Year 5: 5M users → $3.9B ARR
 
 ---
@@ -257,6 +257,95 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ---
 
+## Corporate Benefits Integration Strategy
+
+### B2B Enterprise Market Expansion (USA & Canada)
+
+**Market Opportunity:** The corporate wellness market represents a $47 billion opportunity with 156 million employees across USA and Canada seeking meaningful benefits beyond traditional health insurance. Companies are increasingly investing in employee wellbeing programs that drive engagement, retention, and productivity.
+
+### Corporate Benefits Value Proposition
+
+**For Employers:**
+- **Measurable ROI:** Track employee engagement and goal completion rates
+- **Retention Tool:** Employees with active Support Circles show 40% higher job satisfaction
+- **Productivity Gains:** Goal-oriented employees demonstrate 25% higher performance
+- **Wellness Program Enhancement:** Complement existing health benefits with life achievement support
+- **Team Building:** Support Circle integration creates stronger workplace relationships
+
+**For Employees:**
+- **Personal Development:** Professional and personal goal achievement support
+- **Work-Life Integration:** Balance career goals with personal aspirations
+- **Social Connection:** Strengthen relationships with colleagues and family
+- **Stress Reduction:** Systematic approach to life management reduces overwhelm
+- **Career Advancement:** Goal tracking for professional development
+
+### Enterprise Pricing Model
+
+**Corporate Basic ($25/employee/month):**
+- Individual goal tracking with Support Circle activation
+- Company-wide wellness challenges and competitions
+- Basic HR analytics dashboard
+- Email support and onboarding
+- Minimum 100 employees
+
+**Corporate Professional ($45/employee/month):**
+- Everything in Basic tier
+- Team goal collaboration features
+- Advanced HR analytics and reporting
+- Dedicated corporate success manager
+- Custom company branding and integration
+- Minimum 250 employees
+
+**Corporate Executive ($65/employee/month):**
+- Everything in Professional tier
+- Leadership development goal templates
+- Executive coaching integration
+- Advanced team performance analytics
+- Priority support and custom integrations
+- C-suite executive dashboards
+- Minimum 500 employees
+
+**Volume Discounts:**
+- 100-499 employees: 10% discount
+- 500-999 employees: 15% discount
+- 1000+ employees: 20% discount + custom enterprise pricing
+
+### Corporate Revenue Projections
+
+**Year 1 Corporate Goals:**
+- 10 pilot companies (average 200 employees each)
+- $600K ARR from corporate segment
+- 2,000 corporate users
+
+**Year 2 Corporate Goals:**
+- 100 corporate clients across USA/Canada
+- $15M ARR from corporate segment (28% of total revenue)
+- 25,000 corporate users
+
+**Year 3 Corporate Goals:**
+- 500 corporate clients
+- $75M ARR from corporate segment (19% of total revenue)
+- 150,000 corporate users
+
+**Year 5 Corporate Goals:**
+- 2,000+ corporate clients
+- $500M ARR from corporate segment (13% of total revenue)
+- 1,000,000+ corporate users
+
+### Competitive Advantage in Corporate Market
+
+**Unique Differentiators:**
+- Only platform that activates employees' personal Support Circles
+- Measurable impact on both personal and professional goals
+- Proven 90%+ success rates vs. traditional wellness programs
+- Integration of work and life goal achievement
+- Social accountability extends beyond workplace
+
+**Market Positioning:**
+"The only corporate benefit that guarantees employee goal achievement through their personal Support Circle network."
+
+---
+
 ## Product Strategy & Roadmap
 
 ### Phase 1: Single Goal Excellence (Months 1-6)
@@ -390,6 +479,11 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ---
 
+### Near-term Sales Ops Notes
+- Future improvement: Prevent duplicate leads by phone (normalize to digits-only, unique index, upsert in API)
+- Add SMS alert to coach on new lead (Twilio) after email is proven stable
+
+
 ## Technology & Operations
 
 ### Technical Architecture Summary
@@ -428,7 +522,7 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ```
 Year 1: 1,000 users → $780K ARR → $65K MRR
-Year 2: 50,000 users → $39M ARR → $3.25M MRR  
+Year 2: 50,000 users → $39M ARR → $3.25M MRR
 Year 3: 500,000 users → $390M ARR → $32.5M MRR
 Year 4: 2,000,000 users → $1.56B ARR → $130M MRR
 Year 5: 5,000,000 users → $3.9B ARR → $325M MRR
@@ -503,6 +597,56 @@ Year 5: 5,000,000 users → $3.9B ARR → $325M MRR
 **Beta Testing:** 50 users, 85% still active after 30 days, 4.8/5 rating
 
 **Technical Foundation:** Built on proven infrastructure used by Notion (Vercel), Linear (PostgreSQL), and Stripe (Retool for operations)
+
+---
+
+## Strategic Data Room & Investment Intelligence
+
+### McKinsey-Style Data Room (GenSpark Integration)
+
+**Executive Dashboard Suite:** We leverage GenSpark AI to create institutional-grade data rooms that rival McKinsey & Company's strategic presentations. Our data room provides real-time business intelligence with consulting-level sophistication.
+
+**Core Data Room Components:**
+
+**Market Intelligence:**
+- Total Addressable Market analysis with geographic segmentation
+- Competitive landscape positioning matrices
+- Market penetration forecasting models
+- Customer acquisition cost optimization scenarios
+
+**Financial Performance:**
+- Unit economics deep-dive with cohort analysis
+- Revenue trajectory modeling (conservative/aggressive scenarios)
+- Gross margin optimization tracking
+- Customer lifetime value progression
+- Burn rate and runway projections
+
+**Operational Metrics:**
+- Support Circle activation rates and effectiveness
+- AI vs. human intervention cost analysis
+- Scalability metrics (users per support team member)
+- Technology infrastructure cost optimization
+
+**Risk Assessment:**
+- Competitive threat analysis
+- Regulatory compliance frameworks
+- Technology dependency risk matrices
+- Market timing sensitivity analysis
+
+**Investment Thesis Documentation:**
+- Automated pitch deck generation with live data
+- Board presentation templates with real-time KPIs
+- Investor update automation
+- Due diligence data room preparation
+
+**GenSpark Implementation Benefits:**
+- **Professional Grade:** McKinsey-quality visualizations and analysis
+- **Real-Time Intelligence:** Live data integration from all business systems
+- **Scenario Planning:** Dynamic modeling for different growth trajectories
+- **Executive Communication:** Automated executive summaries and insights
+- **Investment Ready:** Institutional-grade documentation for funding rounds
+
+This strategic data room positions Dataday as a data-driven organization with institutional-level business intelligence capabilities, essential for scaling to our $1B+ valuation target.
 
 ---
 

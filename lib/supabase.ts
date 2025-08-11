@@ -31,6 +31,21 @@ export const createServerClient = (cookieStore: any) => {
   )
 }
 
+// Reason: Service role client for API routes that need full database access without authentication
+export const createServiceRoleClient = () => {
+  return createSupabaseServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get() { return undefined },
+        set() {},
+        remove() {},
+      },
+    }
+  )
+}
+
 // Reason: Helper function to get authenticated user on server
 export async function getUser() {
   const cookieStore = cookies()

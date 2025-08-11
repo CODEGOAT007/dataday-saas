@@ -25,6 +25,23 @@ interface DialogTitleProps {
   children: React.ReactNode
 }
 
+interface DialogDescriptionProps {
+  className?: string
+  children: React.ReactNode
+}
+
+interface DialogTriggerProps {
+  className?: string
+  children: React.ReactNode
+  asChild?: boolean
+  onClick?: () => void
+}
+
+interface DialogFooterProps {
+  className?: string
+  children: React.ReactNode
+}
+
 const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -64,7 +81,7 @@ const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
 const DialogContent = ({ className, children }: DialogContentProps) => {
   return (
     <div className={cn(
-      "bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto",
+      "bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700",
       className
     )}>
       {children}
@@ -82,10 +99,38 @@ const DialogHeader = ({ className, children }: DialogHeaderProps) => {
 
 const DialogTitle = ({ className, children }: DialogTitleProps) => {
   return (
-    <h2 className={cn("text-lg font-semibold text-gray-900", className)}>
+    <h2 className={cn("text-lg font-semibold text-gray-900 dark:text-white", className)}>
       {children}
     </h2>
   )
 }
 
-export { Dialog, DialogContent, DialogHeader, DialogTitle }
+const DialogDescription = ({ className, children }: DialogDescriptionProps) => {
+  return (
+    <p className={cn("text-sm text-gray-600 dark:text-gray-400", className)}>
+      {children}
+    </p>
+  )
+}
+
+const DialogTrigger = ({ className, children, asChild, onClick }: DialogTriggerProps) => {
+  if (asChild) {
+    return React.cloneElement(children as React.ReactElement, { onClick })
+  }
+
+  return (
+    <button className={className} onClick={onClick}>
+      {children}
+    </button>
+  )
+}
+
+const DialogFooter = ({ className, children }: DialogFooterProps) => {
+  return (
+    <div className={cn("flex justify-end gap-2 mt-6", className)}>
+      {children}
+    </div>
+  )
+}
+
+export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter }

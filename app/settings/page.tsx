@@ -1,7 +1,14 @@
 import type { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Settings, User, Bell, Shield, Smartphone } from 'lucide-react'
+import { ResetGoalsSection } from '@/components/settings/reset-goals-section'
+import { UserProfileSection } from '@/components/settings/user-profile-section'
+import { ResetSupportCircleSection } from '@/components/settings/reset-support-circle-section'
 
 export const metadata: Metadata = {
   title: 'Settings - MyDataday',
@@ -10,49 +17,22 @@ export const metadata: Metadata = {
 
 export default function SettingsPage() {
   return (
-    <>
-      {/* Header */}
+    <div className="space-y-6">
+      {/* Page Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Settings className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        </div>
-        <p className="text-gray-600">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          Settings
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           Manage your account settings and app preferences
         </p>
       </div>
 
       {/* Settings Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Account Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Account Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Display Name</label>
-              <input 
-                type="text" 
-                className="w-full p-2 border rounded-md"
-                placeholder="Your display name"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
-              <input 
-                type="email" 
-                className="w-full p-2 border rounded-md"
-                placeholder="your@email.com"
-              />
-            </div>
-            <Button className="w-full">Save Changes</Button>
-          </CardContent>
-        </Card>
+        <UserProfileSection />
 
         {/* Notification Settings */}
         <Card>
@@ -64,20 +44,20 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Emergency Support Team Alerts</span>
-              <input type="checkbox" defaultChecked />
+              <Label htmlFor="support-circle-alerts" className="text-sm font-normal">Support Circle Alerts</Label>
+              <Switch id="support-circle-alerts" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Daily Check-in Reminders</span>
-              <input type="checkbox" defaultChecked />
+              <Label htmlFor="daily-reminders" className="text-sm font-normal">Daily Check-in Reminders</Label>
+              <Switch id="daily-reminders" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Goal Milestone Celebrations</span>
-              <input type="checkbox" defaultChecked />
+              <Label htmlFor="milestone-celebrations" className="text-sm font-normal">Goal Milestone Celebrations</Label>
+              <Switch id="milestone-celebrations" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Weekly Progress Reports</span>
-              <input type="checkbox" />
+              <Label htmlFor="progress-reports" className="text-sm font-normal">Weekly Progress Reports</Label>
+              <Switch id="progress-reports" />
             </div>
           </CardContent>
         </Card>
@@ -92,15 +72,15 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Make goals public</span>
-              <input type="checkbox" />
+              <Label htmlFor="public-goals" className="text-sm font-normal">Make goals public</Label>
+              <Switch id="public-goals" />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Allow friend requests</span>
-              <input type="checkbox" defaultChecked />
+              <Label htmlFor="friend-requests" className="text-sm font-normal">Allow friend requests</Label>
+              <Switch id="friend-requests" defaultChecked />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Data Export</label>
+              <Label className="text-sm font-medium">Data Export</Label>
               <Button variant="outline" className="w-full">
                 Download My Data
               </Button>
@@ -118,24 +98,34 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Theme</label>
-              <select className="w-full p-2 border rounded-md">
-                <option>System Default</option>
-                <option>Light Mode</option>
-                <option>Dark Mode</option>
-              </select>
+              <Label htmlFor="theme">Theme</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="System Default" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="system">System Default</SelectItem>
+                  <SelectItem value="light">Light Mode</SelectItem>
+                  <SelectItem value="dark">Dark Mode</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Language</label>
-              <select className="w-full p-2 border rounded-md">
-                <option>English</option>
-                <option>Spanish</option>
-                <option>French</option>
-              </select>
+              <Label htmlFor="language">Language</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="English" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Spanish</SelectItem>
+                  <SelectItem value="fr">French</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm">Offline Mode</span>
-              <input type="checkbox" defaultChecked />
+              <Label htmlFor="offline-mode" className="text-sm font-normal">Offline Mode</Label>
+              <Switch id="offline-mode" defaultChecked />
             </div>
           </CardContent>
         </Card>
@@ -143,20 +133,28 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger Zone */}
-      <Card className="mt-8 border-red-200">
+      <Card className="mt-8 border-red-200 dark:border-red-800">
         <CardHeader>
-          <CardTitle className="text-red-600">Danger Zone</CardTitle>
+          <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Delete Account</p>
-              <p className="text-sm text-gray-600">Permanently delete your account and all data</p>
+        <CardContent className="space-y-6">
+          <ResetGoalsSection />
+
+          <div className="border-t pt-6">
+            <ResetSupportCircleSection />
+          </div>
+
+          <div className="border-t pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white">Delete Account</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Permanently delete your account and all data</p>
+              </div>
+              <Button variant="destructive">Delete Account</Button>
             </div>
-            <Button variant="destructive">Delete Account</Button>
           </div>
         </CardContent>
       </Card>
-    </>
+    </div>
   )
 }

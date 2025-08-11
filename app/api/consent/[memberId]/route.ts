@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ConsentService } from '@/lib/services/consent-service'
-import { createClient } from '@/lib/supabase-client'
-
-const supabase = createClient()
+import { createServiceRoleClient } from '@/lib/supabase'
 
 // GET: Fetch Emergency Support Team member data for consent form
 export async function GET(
@@ -11,10 +9,24 @@ export async function GET(
 ) {
   try {
     const { memberId } = params
+    const userAgent = request.headers.get('user-agent') || 'unknown'
+    const isMobile = /Mobile|Android|iPhone|iPad/.test(userAgent)
+
+    console.log('🔍 Consent API GET request:', {
+      memberId,
+      userAgent,
+      isMobile,
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING',
+      headers: Object.fromEntries(request.headers.entries())
+    })
+
+    // Create service role client for database access (no authentication needed)
+    const supabase = createServiceRoleClient()
 
     // Fetch member data with user information
     const { data: member, error } = await supabase
-      .from('emergency_support_team')
+      .from('support_circle')
       .select(`
         *,
         users (
@@ -27,11 +39,23 @@ export async function GET(
       .single()
 
     if (error || !member) {
+      console.error('Consent API - Member lookup failed:', {
+        memberId,
+        error: error?.message,
+        memberExists: !!member
+      })
       return NextResponse.json(
-        { error: 'Emergency Support Team member not found' },
+        { error: 'Support Circle member not found' },
         { status: 404 }
       )
     }
+
+    console.log('Consent API - Member found:', {
+      memberId,
+      memberName: member.name,
+      hasUsers: !!member.users,
+      userFullName: member.users?.full_name
+    })
 
     // Don't expose sensitive information
     const sanitizedMember = {
@@ -52,7 +76,13 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Error fetching member data:', error)
+    console.error('🔍 Error fetching member data:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      memberId: params.memberId,
+      userAgent: request.headers.get('user-agent'),
+      isMobile: /Mobile|Android|iPhone|iPad/.test(request.headers.get('user-agent') || '')
+    })
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

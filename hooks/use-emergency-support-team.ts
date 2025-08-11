@@ -3,17 +3,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase-client'
 import { useAuth } from './use-auth'
-import type { 
-  EmergencySupportTeamMember, 
-  EmergencySupportTeamInsert, 
-  EmergencySupportTeamUpdate,
-  EscalationLog 
+import type {
+  SupportCircleMember,
+  SupportCircleInsert,
+  SupportCircleUpdate,
+  EscalationLog
 } from '@/types'
 
 const supabase = createClient()
 
 // Sample data for demo mode
-const sampleEmergencySupportTeam: EmergencySupportTeamMember[] = [
+const sampleSupportCircle: SupportCircleMember[] = [
   {
     id: '1',
     user_id: 'demo-user',
@@ -91,11 +91,11 @@ export function useEmergencySupportTeam() {
     error,
   } = useQuery({
     queryKey: ['emergency_support_team', user?.id || 'demo'],
-    queryFn: async (): Promise<EmergencySupportTeamMember[]> => {
+    queryFn: async (): Promise<SupportCircleMember[]> => {
       // Reason: If no user, return sample data for demo
       if (!user) {
         await new Promise(resolve => setTimeout(resolve, 300))
-        return sampleEmergencySupportTeam
+        return sampleSupportCircle
       }
       
       const { data, error } = await supabase
@@ -113,7 +113,7 @@ export function useEmergencySupportTeam() {
 
   // Reason: Mutation for adding Emergency Support Team member
   const addMemberMutation = useMutation({
-    mutationFn: async (memberData: EmergencySupportTeamInsert): Promise<EmergencySupportTeamMember> => {
+    mutationFn: async (memberData: SupportCircleInsert): Promise<SupportCircleMember> => {
       if (!user) throw new Error('User not authenticated')
       
       const { data, error } = await supabase
@@ -135,7 +135,7 @@ export function useEmergencySupportTeam() {
 
   // Reason: Mutation for updating Emergency Support Team member
   const updateMemberMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: EmergencySupportTeamUpdate }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: SupportCircleUpdate }) => {
       if (!user) throw new Error('User not authenticated')
       
       const { data, error } = await supabase
@@ -181,7 +181,7 @@ export function useEmergencySupportTeam() {
 
   // Reason: Mutation for bulk adding Emergency Support Team members (onboarding)
   const addMultipleMembersMutation = useMutation({
-    mutationFn: async (members: EmergencySupportTeamInsert[]): Promise<EmergencySupportTeamMember[]> => {
+    mutationFn: async (members: SupportCircleInsert[]): Promise<SupportCircleMember[]> => {
       if (!user) throw new Error('User not authenticated')
       
       const membersWithUserId = members.map(member => ({

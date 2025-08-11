@@ -1,36 +1,31 @@
 import { Metadata } from 'next'
-import { GoalsList } from '@/components/goals/goals-list'
-import { CreateGoalButton } from '@/components/goals/create-goal-button'
-import { GoalsStats } from '@/components/goals/goals-stats'
-import { GoalsFilters } from '@/components/goals/goals-filters'
+import { GoalCreationFlow } from '@/components/goals/goal-creation-flow'
 
 export const metadata: Metadata = {
-  title: 'Goals',
-  description: 'Manage your goals and track your progress',
+  title: 'Goals - Coach Dashboard',
+  description: 'Help users set goals and activate their support circles',
 }
 
 export default function GoalsPage() {
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Goals</h1>
-          <p className="text-muted-foreground">
-            Track your progress and achieve your dreams
+    <div className="min-h-screen bg-gray-950">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Page Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4">Coach: Set User Goal</h1>
+          <p className="text-gray-300 text-lg">
+            Help the user define their goal and record a personal message for their support circle
           </p>
+          <div className="mt-4 p-3 bg-blue-900/20 border border-blue-700 rounded-lg">
+            <p className="text-blue-200 text-sm">
+              👨‍💼 <strong>Coach Mode:</strong> You're setting up a goal for the user. Guide them through each step.
+            </p>
+          </div>
         </div>
-        <CreateGoalButton />
+
+        {/* Goal Creation Flow */}
+        <GoalCreationFlow />
       </div>
-
-      {/* Goals Stats */}
-      <GoalsStats />
-
-      {/* Filters */}
-      <GoalsFilters />
-
-      {/* Goals List */}
-      <GoalsList />
     </div>
   )
 }

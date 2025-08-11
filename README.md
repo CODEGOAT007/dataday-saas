@@ -206,9 +206,19 @@ npm run test:coverage
 ### Vercel (Recommended)
 
 ```bash
-# Deploy to Vercel
-vercel --prod
+# One-time setup
+npm run vercel:login
+npm run vercel:link
+
+# Fast, production deploy
+npm run deploy
+
+# Force rebuild deploy
+npm run deploy:force
 ```
+
+- Primary domain: https://mydataday.app
+- Inspect latest deploys in Vercel dashboard via `npx vercel open` or the Inspect link printed in CLI.
 
 ### Environment Variables
 

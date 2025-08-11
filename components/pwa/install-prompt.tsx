@@ -31,9 +31,15 @@ export function InstallPrompt() {
       return false
     }
 
-    // Second check: Explicit desktop OS detection
-    if (/windows nt|macintosh|mac os x|linux|x11/.test(userAgent)) {
+    // Second check: Explicit desktop OS detection (but allow Android emulation)
+    if (/windows nt|macintosh|mac os x/.test(userAgent)) {
       console.log('PWA Install Check: Desktop OS detected - DESKTOP')
+      return false
+    }
+
+    // Special case: Linux with Android (mobile emulation in dev tools)
+    if (/linux/.test(userAgent) && !/android/.test(userAgent)) {
+      console.log('PWA Install Check: Linux desktop detected - DESKTOP')
       return false
     }
 
