@@ -21,7 +21,8 @@ export default function LiveGoalVoicePage() {
   const [duration, setDuration] = useState(0)
   const [countdown, setCountdown] = useState<number | null>(null)
   const [audioUrl, setAudioUrl] = useState<string | null>(null) // local preview
-  const [serverUrl, setServerUrl] = useState<string | null>(null) // uploaded URL
+  const [signedPreviewUrl, setSignedPreviewUrl] = useState<string | null>(null) // signed preview URL
+  const [storagePath, setStoragePath] = useState<string | null>(null) // storage object path
 
   // Recording refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -190,9 +191,11 @@ export default function LiveGoalVoicePage() {
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error || 'Upload failed')
       const signedUrl = json.signedUrl as string
-      setServerUrl(signedUrl)
-      try { sessionStorage.setItem('mdd_voice_note_url', signedUrl) } catch {}
-      return signedUrl
+      const path = json.path as string
+      setSignedPreviewUrl(signedUrl)
+      setStoragePath(path)
+      try { sessionStorage.setItem('mdd_voice_note_url', signedUrl); sessionStorage.setItem('mdd_voice_note_path', path) } catch {}
+      return path
     } catch (e: any) {
       setUploadError(e?.message || 'Upload failed')
       return null
@@ -202,18 +205,15 @@ export default function LiveGoalVoicePage() {
   }
 
   const onNext = async () => {
-    let finalUrl = serverUrl
-    if (!finalUrl) {
-      const url = await upload()
-      if (!url) return
-      finalUrl = url
+    let finalPath = storagePath
+    if (!finalPath) {
+      const path = await upload()
+      if (!path) return
+      finalPath = path
     }
-    if (sessionId && finalUrl) {
-      // Store storage path in session.voice_note_url for signed on-demand playback
-      // Since upload route now returns signedUrl only, we cannot infer path here.
-      // For MVP, keep signedUrl in session for immediate demo; follow-up: return path as well and store it.
-      await patch({ voice_note_url: finalUrl }).catch(() => {})
-      // Optionally advance step
+    if (sessionId && finalPath) {
+      // Store storage object path in session for on-demand signed playback
+      await patch({ voice_note_url: finalPath }).catch(() => {})
       await patch({ current_step: 'send-notifications' }).catch(() => {})
     }
     router.push('/journey/live/support-contacts')

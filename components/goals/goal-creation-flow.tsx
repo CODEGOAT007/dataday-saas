@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { VoiceRecorder } from '@/components/goals/voice-recorder'
 import { CheckCircle, Target, Mic, Send } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { useIntroSession } from '@/hooks/use-intro-session'
 
 type Step = 'goal-details' | 'voice-message' | 'send-notifications'
 
@@ -20,12 +22,24 @@ interface GoalData {
   voiceNoteUrl?: string
 }
 
+
 export function GoalCreationFlow() {
   const [currentStep, setCurrentStep] = useState<Step>('goal-details')
   const [goalData, setGoalData] = useState<GoalData>({
     title: '',
     description: '',
     frequency: '',
+  const params = useSearchParams()
+  const sessionId = params.get('session')
+  const { session, patch } = useIntroSession(sessionId)
+
+  // Keep currentStep in sync with Intro Session when present
+  useEffect(() => {
+    if (!sessionId) return
+    const s = (session?.current_step as Step | undefined) || 'goal-details'
+    setCurrentStep(s)
+  }, [session?.current_step, sessionId])
+
     duration: ''
   })
   const [existingGoals, setExistingGoals] = useState<any[]>([])
@@ -58,17 +72,25 @@ export function GoalCreationFlow() {
 
   const currentStepIndex = steps.findIndex(step => step.id === currentStep)
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const nextIndex = currentStepIndex + 1
     if (nextIndex < steps.length) {
-      setCurrentStep(steps[nextIndex].id as Step)
+      const next = steps[nextIndex].id as Step
+      setCurrentStep(next)
+      if (sessionId) {
+        try { await patch({ current_step: next }) } catch {}
+      }
     }
   }
 
-  const handleBack = () => {
+  const handleBack = async () => {
     const prevIndex = currentStepIndex - 1
     if (prevIndex >= 0) {
-      setCurrentStep(steps[prevIndex].id as Step)
+      const prev = steps[prevIndex].id as Step
+      setCurrentStep(prev)
+      if (sessionId) {
+        try { await patch({ current_step: prev }) } catch {}
+      }
     }
   }
 
@@ -141,13 +163,13 @@ export function GoalCreationFlow() {
             const Icon = step.icon
             const isActive = index === currentStepIndex
             const isCompleted = index < currentStepIndex
-            
+
             return (
               <div key={step.id} className="flex items-center">
                 <div className={`
                   flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors
-                  ${isActive ? 'border-blue-500 bg-blue-500 text-white' : 
-                    isCompleted ? 'border-green-500 bg-green-500 text-white' : 
+                  ${isActive ? 'border-blue-500 bg-blue-500 text-white' :
+                    isCompleted ? 'border-green-500 bg-green-500 text-white' :
                     'border-gray-600 text-gray-400'}
                 `}>
                   {isCompleted ? <CheckCircle className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
@@ -171,13 +193,13 @@ export function GoalCreationFlow() {
         </CardHeader>
         <CardContent className="space-y-6">
           {currentStep === 'goal-details' && (
-            <GoalDetailsStep 
-              goalData={goalData} 
+            <GoalDetailsStep
+              goalData={goalData}
               setGoalData={setGoalData}
               onNext={handleNext}
             />
           )}
-          
+
           {currentStep === 'voice-message' && (
             <VoiceMessageStep
               goalData={goalData}
@@ -200,14 +222,14 @@ export function GoalCreationFlow() {
 }
 
 // Step Components
-function GoalDetailsStep({ 
-  goalData, 
-  setGoalData, 
-  onNext 
-}: { 
+function GoalDetailsStep({
+  goalData,
+  setGoalData,
+  onNext
+}: {
   goalData: GoalData
   setGoalData: (data: GoalData) => void
-  onNext: () => void 
+  onNext: () => void
 }) {
   const isValid = goalData.title && goalData.frequency && goalData.duration
 
@@ -271,8 +293,8 @@ function GoalDetailsStep({
       </div>
 
       <div className="flex justify-end">
-        <Button 
-          onClick={onNext} 
+        <Button
+          onClick={onNext}
           disabled={!isValid}
           className="bg-blue-600 hover:bg-blue-700"
         >
@@ -283,12 +305,12 @@ function GoalDetailsStep({
   )
 }
 
-function VoiceMessageStep({ 
-  goalData, 
-  onVoiceRecorded, 
-  onNext, 
-  onBack 
-}: { 
+function VoiceMessageStep({
+  goalData,
+  onVoiceRecorded,
+  onNext,
+  onBack
+}: {
   goalData: GoalData
   onVoiceRecorded: (url: string) => void
   onNext: () => void
