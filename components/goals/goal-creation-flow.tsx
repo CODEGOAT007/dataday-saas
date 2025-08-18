@@ -362,6 +362,7 @@ function SendNotificationsStep({ goalData, onBack }: { goalData: GoalData, onBac
       }
 
       const { goal } = await goalResponse.json()
+      try { sessionStorage.setItem('mdd_primary_goal_id', goal.id) } catch {}
 
       // Then send notifications to support circle
       const notificationResponse = await fetch('/api/support-circle/notify', {

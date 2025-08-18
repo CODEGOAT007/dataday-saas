@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { LogOut, Loader2 } from 'lucide-react'
 
 interface LogoutButtonProps {
@@ -21,22 +21,15 @@ export function LogoutButton({
   className
 }: LogoutButtonProps) {
   const { signOut, isSigningOut } = useAuth()
-  const { toast } = useToast()
 
   const handleLogout = async () => {
     try {
       await signOut()
-      toast({
-        title: "Signed out successfully",
-        description: "You have been logged out of your account.",
-      })
+      // Reason: Short, modern toast that doesn’t linger
+      toast.success('Signed out', { id: 'logout', duration: 1200 })
     } catch (error) {
       console.error('Logout error:', error)
-      toast({
-        title: "Logout failed",
-        description: "There was an error signing you out. Please try again.",
-        variant: "destructive",
-      })
+      toast.error('Logout failed. Please try again.', { id: 'logout-error' })
     }
   }
 

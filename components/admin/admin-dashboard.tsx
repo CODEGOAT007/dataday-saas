@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -9,6 +10,8 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Users, Target, Mail, Search, ExternalLink, UserCheck, DollarSign, TrendingUp, Briefcase, Copy } from 'lucide-react'
+import { LeadLinearActions } from '@/components/admin/lead-linear-actions'
+import { LeadWorkspace } from '@/components/admin/lead-workspace'
 import { toast } from 'sonner'
 
 interface User {
@@ -51,25 +54,51 @@ interface PhoneLead {
 }
 
 export function AdminDashboard() {
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [phoneLeads, setPhoneLeads] = useState<PhoneLead[]>([])
   const [stats, setStats] = useState<UserStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState<'users' | 'leads'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'leads'>('leads')
   const [vmTemplate, setVmTemplate] = useState<string>("Hey, it's Chris from DataDay. I saw you entered your number on the site. I'm giving you a quick call now and will try again shortly. You can also text me back here and we’ll get you set up. Talk soon.") // Reason: Default script for fast action
   const [vmEditorOpen, setVmEditorOpen] = useState<boolean>(false) // Reason: Controls the template editor dialog
   const [paymentDialogOpen, setPaymentDialogOpen] = useState<boolean>(false) // Reason: Controls the checkout link dialog
+  const [summaryCollapsed, setSummaryCollapsed] = useState<boolean>(true) // Reason: Collapse the header/summary by default
+  const [adminEmail, setAdminEmail] = useState<string | null>(null) // Reason: Identify admin for server-side prefs
   const [paymentLink, setPaymentLink] = useState<string | null>(null) // Reason: Stores generated checkout URL
   const [attachDialogOpen, setAttachDialogOpen] = useState<boolean>(false) // Reason: Controls the attach user dialog
   const [attachLeadId, setAttachLeadId] = useState<string | null>(null) // Reason: Target lead to attach a user to
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null) // Reason: Selected user to attach
   const [userFilter, setUserFilter] = useState<string>('') // Reason: Filter users in attach dialog
+  const [workspaceLeadId, setWorkspaceLeadId] = useState<string | null>(null) // Reason: Slide-over focus mode
 
   useEffect(() => {
-    // Reason: Persist template per admin device for now; can move to Supabase settings later
+    // Reason: Load VM template from local storage (still device-specific)
     const saved = typeof window !== 'undefined' ? localStorage.getItem('vm_template') : null
     if (saved) setVmTemplate(saved)
+
+    // Reason: Load admin session and preferences from server
+    ;(async () => {
+      try {
+        const verify = await fetch('/api/admin/auth/verify')
+        if (verify.ok) {
+          const v = await verify.json()
+          const email = v.session?.email as string | undefined
+          if (email) setAdminEmail(email)
+
+          const prefsRes = await fetch(`/api/admin/preferences?email=${encodeURIComponent(email || '')}`)
+          if (prefsRes.ok) {
+            const prefs = await prefsRes.json()
+            if (typeof prefs.summary_collapsed === 'boolean') {
+              setSummaryCollapsed(prefs.summary_collapsed)
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load admin preferences', e)
+      }
+    })()
   }, [])
 
   useEffect(() => {
@@ -101,7 +130,7 @@ export function AdminDashboard() {
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
-      toast.error('Failed to load dashboard data')
+      toast.error('Failed to load dashboard data', { id: 'dashboard-fetch' })
     } finally {
       setLoading(false)
     }
@@ -177,6 +206,28 @@ export function AdminDashboard() {
       </div>
 
       {/* Business Goals Progress */}
+      {/* Collapsible Summary Section */}
+      <div className="mb-4">
+        <button
+          onClick={async () => {
+            const next = !summaryCollapsed
+            setSummaryCollapsed(next)
+            try {
+              if (adminEmail) {
+                await fetch('/api/admin/preferences', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: adminEmail, summary_collapsed: next })
+                })
+              }
+            } catch {}
+          }}
+          className="text-sm text-gray-300 hover:text-white underline"
+        >
+          {summaryCollapsed ? 'Show summary' : 'Hide summary'}
+        </button>
+      </div>
+      {!summaryCollapsed && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Short-term Goal */}
         <Card className="bg-gradient-to-br from-green-900/20 to-green-800/10 border-green-700">
@@ -275,8 +326,10 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Current Revenue Summary */}
+      {!summaryCollapsed && (
       <Card className="bg-gradient-to-r from-gray-900 to-gray-800 border-gray-700">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -314,9 +367,10 @@ export function AdminDashboard() {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* Stats Cards */}
-      {stats && (
+      {stats && !summaryCollapsed && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <Card className="bg-gray-900 border-gray-700">
             <CardContent className="p-6">
@@ -424,24 +478,24 @@ export function AdminDashboard() {
             <div className="flex gap-4">
               <Button
                 variant="ghost"
+                onClick={() => setActiveTab('leads')}
+                className={`text-white ${activeTab === 'leads' ? 'bg-gray-800 border border-gray-700' : 'hover:bg-gray-800/60'}`}
+              >
+                📱 Phone Leads ({phoneLeads.length})
+              </Button>
+              <Button
+                variant="ghost"
                 onClick={() => setActiveTab('users')}
                 className={`text-white ${activeTab === 'users' ? 'bg-gray-800 border border-gray-700' : 'hover:bg-gray-800/60'}`}
               >
                 <Users className="w-4 h-4 mr-2" />
                 Users ({users.length})
               </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setActiveTab('leads')}
-                className={`text-white ${activeTab === 'leads' ? 'bg-gray-800 border border-gray-700' : 'hover:bg-gray-800/60'}`}
-              >
-                📱 Phone Leads ({phoneLeads.length})
-              </Button>
             </div>
             <div className="flex items-center gap-2">
               <Search className="w-4 h-4 text-gray-400" />
               <Input
-                placeholder={activeTab === 'users' ? "Search users..." : "Search phone leads..."}
+                placeholder={activeTab === 'leads' ? "Search phone leads..." : "Search users..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-64 bg-gray-800 border-gray-600 text-white"
@@ -504,7 +558,7 @@ export function AdminDashboard() {
                 lead.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 lead.email?.toLowerCase().includes(searchTerm.toLowerCase())
               ).map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                <div key={lead.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg cursor-pointer" onClick={() => router.push(`/admin/leads/${lead.id}/call-flow`)}>
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
                       <div>
@@ -587,170 +641,15 @@ export function AdminDashboard() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(lead.phone)
-                          toast.success('Phone copied')
-                        } catch {
-                          toast.error('Could not copy phone')
-                        }
-                      }}
-                      size="sm"
-                      variant="secondary"
-                      className="bg-gray-700 hover:bg-gray-600 text-white border border-gray-600"
-                    >
-                      <Copy className="w-4 h-4 mr-2" /> Copy
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        // Reason: Fast live workflow — copy VM script, set status, log note. Text sending to be wired via Twilio later.
-                        try {
-                          await navigator.clipboard.writeText(vmTemplate)
-                          toast.success('VM/Text script copied')
-                        } catch {
-                          toast.error('Could not copy VM script')
-                        }
-                        try {
-                          const res = await fetch('/api/admin/phone-leads', {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: lead.id, status: 'contacted', notes: 'Text + VM action used' })
-                          })
-                          if (!res.ok) throw new Error('Failed')
-                          toast.success('Logged: Text + VM')
-                          fetchDashboardData()
-                        } catch {
-                          toast.error('Could not log Text + VM')
-                        }
-                      }}
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      ✉️ Text + VM
-                    </Button>
-                    <Button
-                      onClick={() => window.open(`tel:${lead.phone}`, '_self')}
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      📞 Call
-                    </Button>
-                    <Button
-                      onClick={() => window.open(`https://www.fastbackgroundcheck.com/phone`, '_blank')}
-                      size="sm"
-                      variant="outline"
-                      className="border-gray-600 text-gray-300"
-                    >
-                      🔍 Lookup
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/admin/phone-leads', {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: lead.id, status: 'connected_now' })
-                          })
-                          if (!res.ok) throw new Error('Failed')
-                          toast.success('Marked as Connected – Live Now')
-                          fetchDashboardData()
-                        } catch {
-                          toast.error('Could not update lead')
-                        }
-                      }}
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      ✅ Live Now
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/admin/phone-leads', {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: lead.id, status: 'signup_sent', notes: 'Signup link sent during call' })
-                          })
-                          if (!res.ok) throw new Error('Failed')
-                          toast.success('Logged: Signup Link Sent')
-                          fetchDashboardData()
-                        } catch {
-                          toast.error('Could not update lead')
-                        }
-                      }}
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      🔗 Signup Link Sent
-                    </Button>
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/admin/phone-leads', {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: lead.id, status: 'account_created', notes: 'Account confirmed during call' })
-                          })
-                          if (!res.ok) throw new Error('Failed')
-                          toast.success('Marked: Account Created')
-                          fetchDashboardData()
-                        } catch {
-                          toast.error('Could not update lead')
-                        }
-                      }}
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      ✅ Mark Account Created
-                    </Button>
-
-                    {(!lead.converted_user_id) && (
-                      <Button
-                        onClick={() => { setAttachLeadId(lead.id); setAttachDialogOpen(true); }}
-                        size="sm"
-                        variant="outline"
-                        className="border-gray-600 text-gray-300"
-                      >
-                        👤 Attach to User
-                      </Button>
-                    )}
-                    <Button
-                      disabled={!lead.converted_user_id}
-                      title={!lead.converted_user_id ? 'Attach to a user first' : undefined}
-                      onClick={async () => {
-                        try {
-                          // Reason: Generate a payment link for default pro tier with beta pricing
-                          const res = await fetch('/api/admin/create-checkout', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId: lead.converted_user_id, tierId: 'pro', beta: true })
-                          })
-                          const data = await res.json()
-                          if (!res.ok) throw new Error(data.error || 'Failed to create checkout session')
-
-                          setPaymentLink(data.url)
-                          setPaymentDialogOpen(true)
-
-                          // Mark lead as payment pending
-                          await fetch('/api/admin/phone-leads', {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: lead.id, status: 'payment_pending', notes: 'Payment link generated' })
-                          })
-                          fetchDashboardData()
-                        } catch (e) {
-                          console.error(e)
-                          toast.error('Could not generate payment link')
-                        }
-                      }}
-                      size="sm"
-                      className="bg-green-700 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      💳 Generate Payment Link
-                    </Button>
-                  </div>
+                  <LeadLinearActions
+                    lead={lead}
+                    vmTemplate={vmTemplate}
+                    onRefresh={fetchDashboardData}
+                    onAttachUser={() => { setAttachLeadId(lead.id); setAttachDialogOpen(true); }}
+                    onOpenPayment={(url) => { setPaymentLink(url); setPaymentDialogOpen(true); }}
+                    isOpen={workspaceLeadId === lead.id}
+                    onToggleWorkspace={() => setWorkspaceLeadId(workspaceLeadId === lead.id ? null : lead.id)}
+                  />
                 </div>
               ))}
 
@@ -797,6 +696,19 @@ export function AdminDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Lead Workspace Slide-over */}
+      {workspaceLeadId && (
+        <LeadWorkspace
+          lead={phoneLeads.find((l) => l.id === workspaceLeadId)!}
+          vmTemplate={vmTemplate}
+          onClose={() => setWorkspaceLeadId(null)}
+          onRefresh={fetchDashboardData}
+          onAttachUser={() => { setAttachLeadId(workspaceLeadId); setAttachDialogOpen(true); }}
+          onOpenPayment={(url) => { setPaymentLink(url); setPaymentDialogOpen(true); }}
+          useFullscreen={true}
+        />
+      )}
 
       {/* Attach Lead to User Dialog */}
       <Dialog open={attachDialogOpen} onOpenChange={setAttachDialogOpen}>

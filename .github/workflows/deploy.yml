@@ -2,9 +2,13 @@ name: Ultra-Fast Vercel Deployment
 
 on:
   push:
-    branches: [main, master]
+    branches: [ '**' ]
   pull_request:
-    branches: [main, master]
+    branches: [ '**' ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

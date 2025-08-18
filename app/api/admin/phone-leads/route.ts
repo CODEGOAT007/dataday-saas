@@ -68,6 +68,26 @@ export async function GET(request: NextRequest) {
 
 // PATCH: Update phone lead status
 export async function PATCH(request: NextRequest) {
+  // Reason: Enforce linear lead transitions server-side with optional override
+  const ALLOWED_NEXT: Record<string, string[]> = {
+    new: ['contacted', 'connected_now', 'lost', 'declined', 'rescheduled'],
+    not_contacted: ['contacted', 'connected_now', 'lost', 'declined', 'rescheduled'],
+    open: ['contacted', 'connected_now', 'lost', 'declined', 'rescheduled'],
+    contacted: ['connected_now', 'signup_sent', 'lost', 'declined', 'rescheduled'],
+    connected_now: ['signup_sent', 'account_created', 'lost', 'declined', 'rescheduled'],
+    signup_sent: ['account_created', 'lost', 'declined', 'rescheduled'],
+    account_created: ['payment_pending', 'attached'],
+    attached: ['payment_pending'],
+    payment_pending: ['card_on_file'],
+    card_on_file: ['onboarded'],
+    onboarded: [],
+    qualified: ['account_created', 'attached', 'payment_pending', 'card_on_file', 'onboarded'],
+    converted: ['card_on_file', 'onboarded'],
+    declined: [],
+    lost: [],
+    rescheduled: ['contacted', 'connected_now']
+  }
+
   try {
     // Verify admin session
     const cookieStore = cookies()
@@ -80,7 +100,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    const { id, status, notes, converted_user_id } = await request.json()
+    const { id, status, notes, converted_user_id, override, next_follow_up } = await request.json()
 
     if (!id || !status) {
       return NextResponse.json(
@@ -91,10 +111,36 @@ export async function PATCH(request: NextRequest) {
 
     const supabase = createServiceRoleClient()
 
+    // Reason: Enforce linear transitions unless override is provided
+    const { data: existing, error: fetchErr } = await supabase
+      .from('leads')
+      .select('lead_status, converted_user_id')
+      .eq('id', id)
+      .single()
+    if (fetchErr) {
+      console.error('Error fetching current lead:', fetchErr)
+      return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+    }
+
+    const currentStatus: string = existing?.lead_status || 'new'
+    const allowedNext = ALLOWED_NEXT[currentStatus] || []
+    const isAllowed = allowedNext.includes(status)
+
+    if (!isAllowed && !override) {
+      return NextResponse.json(
+        { error: `Invalid transition from ${currentStatus} to ${status}` },
+        { status: 400 }
+      )
+    }
+
     const now = new Date().toISOString()
     const updateData: any = {
       lead_status: status,
       updated_at: now
+    }
+
+    if (next_follow_up) {
+      updateData.next_follow_up = next_follow_up
     }
 
     if (notes) {

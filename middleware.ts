@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Reason: Define protected and auth routes
-  const protectedRoutes = ['/dashboard', '/logs', '/settings', '/today', '/support-team']
+  const protectedRoutes = ['/dashboard', '/logs', '/settings', '/today', '/support-team', '/support-circle']
   const authRoutes = ['/auth/login', '/auth/signup', '/auth/callback']
   const publicRoutes = ['/', '/about', '/pricing', '/contact']
   const adminRoutes = ['/admin'] // Admin routes use separate authentication
@@ -108,31 +108,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/support-circle', request.url))
   }
 
-  // Reason: Check if user has completed onboarding
-  if (user && isProtectedRoute && request.nextUrl.pathname !== '/onboarding') {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('onboarding_completed_at')
-      .eq('id', user.id)
-      .single()
+  // Reason: Skip onboarding gate; business flow wants direct access to Today immediately after signup
+  // If you need onboarding later, show it contextually instead of blocking primary nav
+  // Removed: redirect to /onboarding when onboarding_completed_at is null
 
-    if (!profile?.onboarding_completed_at) {
-      return NextResponse.redirect(new URL('/onboarding', request.url))
-    }
-  }
-
-  // Reason: Allow access to onboarding for authenticated users without completed onboarding
-  if (user && request.nextUrl.pathname === '/onboarding') {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('onboarding_completed_at')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.onboarding_completed_at) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
+  // Reason: Onboarding remains accessible if user navigates manually, but never auto-redirect to it
 
   return response
 }

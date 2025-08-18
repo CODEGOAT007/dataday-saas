@@ -1,12 +1,12 @@
 {
-  "name": "MyDataday - Your Personal Goal Achievement App",
-  "short_name": "MyDataday",
-  "description": "Your personal goal achievement app with social accountability. Track progress, get AI coaching, and activate your Emergency Support Team.",
-  "start_url": "/dashboard?utm_source=pwa",
+  "name": "MyDataDay",
+  "short_name": "MyDataDay",
+  "description": "Make YOUR goals OUR problem. One clear step each day, real proof, and support you can count on.",
+  "start_url": "/auth/signup?utm_source=pwa",
   "id": "mydataday-app",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#000000",
+  "theme_color": "#FE0606",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en-US",
@@ -16,22 +16,28 @@
   "handle_links": "preferred",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3e%3crect width='32' height='32' fill='%23000'/%3e%3ctext x='16' y='22' text-anchor='middle' fill='white' font-family='Arial' font-size='18' font-weight='bold'%3eM%3c/text%3e%3c/svg%3e",
+      "src": "/icons/app-icon-32.png",
       "sizes": "32x32",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3e%3crect width='192' height='192' rx='24' fill='%23000'/%3e%3ctext x='96' y='130' text-anchor='middle' fill='white' font-family='Arial' font-size='100' font-weight='bold'%3eM%3c/text%3e%3c/svg%3e",
+      "src": "/icons/app-icon-192-any.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3e%3crect width='512' height='512' rx='64' fill='%23000'/%3e%3ctext x='256' y='340' text-anchor='middle' fill='white' font-family='Arial' font-size='280' font-weight='bold'%3eM%3c/text%3e%3c/svg%3e",
+      "src": "/icons/app-icon-512-any.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -104,6 +110,7 @@
     "preferred_width": 400
   },
   "launch_handler": {
+    "route_to": "existing-client-navigate",
     "client_mode": "navigate-existing"
   }
 }

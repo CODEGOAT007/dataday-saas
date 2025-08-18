@@ -9,10 +9,14 @@ export function CheckoutButton({ tierId = 'basic', priceId }: { tierId?: string;
   const createCheckout = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/subscriptions/create-checkout', {
+      // Toggle between offers via query param (?offer=intro3)
+      const offer = new URLSearchParams(window.location.search).get('offer')
+      const endpoint = offer === 'intro3' ? '/api/subscriptions/start-checkout' : '/api/subscriptions/create-checkout'
+      const body = offer === 'intro3' ? { tierId, offer } : { tierId, priceId }
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tierId, priceId })
+        body: JSON.stringify(body)
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to start checkout')

@@ -65,33 +65,5 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     return null // Will redirect to login
   }
 
-  return (
-    <div>
-      {/* Admin Header */}
-      <div className="bg-blue-900 border-b border-blue-700 px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-blue-100 font-medium">
-              Admin Mode: {adminSession?.full_name}
-            </span>
-            <span className="text-blue-300 text-sm">
-              ({adminSession?.role})
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              fetch('/api/admin/auth/logout', { method: 'POST' })
-              router.push('/admin/login')
-            }}
-            className="text-blue-300 hover:text-white text-sm"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-      
-      {children}
-    </div>
-  )
+  return <>{children}</>
 }

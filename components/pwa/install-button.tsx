@@ -14,16 +14,18 @@ interface InstallButtonProps {
   variant?: 'default' | 'outline' | 'ghost' | 'secondary'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   className?: string
-  showIcon?: boolean
+  showIcon?: boolean,
+  immediateOnly?: boolean // If true, never show instructions; only native prompt when available
   children?: React.ReactNode
 }
 
-export function InstallButton({ 
-  variant = 'default', 
-  size = 'default', 
+export function InstallButton({
+  variant = 'default',
+  size = 'default',
   className,
   showIcon = true,
-  children 
+  immediateOnly = false,
+  children
 }: InstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
@@ -94,12 +96,12 @@ export function InstallButton({
         setShowInstructions(false)
       } catch (error) {
         console.error('Install prompt failed:', error)
-        // Fallback to manual instructions
-        setShowInstructions(true)
+        // Fallback behavior
+        if (!immediateOnly) setShowInstructions(true)
       }
     } else {
       // Show manual instructions
-      setShowInstructions(true)
+      if (!immediateOnly) setShowInstructions(true)
     }
   }
 

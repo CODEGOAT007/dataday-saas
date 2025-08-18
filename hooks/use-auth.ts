@@ -42,8 +42,9 @@ export function useAuth() {
       fullName: string
       redirectTo?: string
     }) => {
-      // Reason: Ensure email confirmation brings user back to intended next step in both local and prod
-      const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || 'https://mydataday.app')
+      // Reason: Always use canonical app URL for email links to satisfy Supabase redirect allow list
+      // Prefer NEXT_PUBLIC_APP_URL if defined; fallback to current origin only in dev
+      const origin = (process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://mydataday.app'))
       const callbackUrl = redirectTo ? `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}` : `${origin}/auth/callback`
 
       const { data, error } = await supabase.auth.signUp({
@@ -57,17 +58,21 @@ export function useAuth() {
         },
       })
       if (error) throw error
-      return data
+      const needsConfirmation = !data.user || !data.user.email_confirmed_at
+      return { data, needsConfirmation }
     },
-    onSuccess: (data) => {
+    onSuccess: (result) => {
       // Reason: Invalidate auth queries to refresh state
       queryClient.invalidateQueries({ queryKey: ['auth'] })
-      
-      if (data.user && !data.user.email_confirmed_at) {
-        // Email confirmation required
-        return { needsConfirmation: true }
-      } else if (data.user) {
-        // User is automatically logged in
+
+      if (result.needsConfirmation) {
+        // Reason: Let the UI show a "check your email" message; do not navigate
+        return
+      }
+
+      const user = result.data?.user
+      if (user) {
+        // User is automatically logged in (depends on project settings)
         router.push('/onboarding')
         router.refresh()
       }

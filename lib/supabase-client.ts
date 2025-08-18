@@ -1,10 +1,15 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/supabase'
 
-// Reason: Client-side Supabase client for use in components
+let browserClient: ReturnType<typeof createBrowserClient<Database>> | null = null
+
+// Reason: Provide a single shared browser client instance so auth listeners are consistent
 export const createClient = () => {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  if (!browserClient) {
+    browserClient = createBrowserClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  }
+  return browserClient
 }

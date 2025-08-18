@@ -10,6 +10,9 @@
 - **Fear of Failure Architecture:** Harnesses social pressure for motivation
 - **Multi-tier Pricing:** $35/$65/$120/$200 with escalating human support
 
+
+- **Design & Style Reference:** Fellow (fellow.app) — clean meeting UI, structured note-taking, and polished dark-mode patterns we want to emulate for admin tooling and call workflows.
+
 ---
 
 ## 🚀 Implementation Roadmap
@@ -81,6 +84,32 @@ Communications: Multi-channel
 Operations: Retool Dashboards
   - Progress Support Team management (1 human per 600 users)
   - Emergency Support Team analytics
+
+### 📞 Telephony & Live Transcription Roadmap
+- Current Mode (Now): Use regular personal cell phone for calls; no call recordings. During calls, type notes directly in the Admin Call Flow “Live Notes” box. Optional: local dictation (e.g., Aqua Voice). No audio stored.
+
+- Phase 1: In-App Live Transcript (Baseline)
+  - Chrome SpeechRecognition for interim text (local mic only)
+  - Interim → final rendering; inline edits; auto-save per call_id
+  - Limitation: remote caller audio not captured
+
+- Phase 2: WebRTC Softphone + Deepgram Realtime (Chosen Path)
+  - Provider: Telnyx WebRTC (Web + Android path)
+  - Capture local+remote tracks; merge stereo (L/R) → 16 kHz PCM
+  - Stream to Deepgram Realtime (multichannel=true, interim_results=true)
+  - UI: editable transcript, notes, consent indicator; DB: lead_calls, lead_call_transcripts, lead_call_notes
+
+- Phase 3 (Optional): Local Audio Capture
+  - VoiceMeeter stereo mapping with any softphone; stream stereo PCM to Deepgram
+
+- Phase 4 (Optional): Self-Hosted PBX
+  - Asterisk/FreePBX or FreeSWITCH; MixMonitor (rx/tx/stereo .raw) or SIPREC (RFC 7866)
+
+- Caller Trust & Compliance
+  - Later: SHAKEN A attestation + Branded Calling; minimal consent prompt/flagging
+
+Decision Status: Use cell phone now (no recording). Build Phase 2 WebRTC + Deepgram into Admin Call Flow.
+
   - User success tracking
   - Escalation monitoring
 ```
@@ -526,6 +555,13 @@ Year 3 Corporate Goals:
 - Retool dashboards for operations
 
 ### 📋 Next Up (Week 7-8)
+
+### Offer Flag: intro3 ($3 Intro Month)
+- Toggle: `?offer=intro3` routes CheckoutButton to `/api/subscriptions/start-checkout`.
+- Flow: Charge one-time `$3` → save payment method → redirect to `/api/checkout/intro-success` → create subscription with 30‑day trial.
+- Env: `STRIPE_INTRO_SETUP_PRICE_ID` must be set.
+- TODO (defer): Day‑27 renewal reminder via n8n (email + SMS) with metadata.offer filter.
+
 - Sales flow and conversion optimization
 - PWA installation guides
 - Launch preparation and beta user onboarding

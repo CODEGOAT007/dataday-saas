@@ -33,10 +33,10 @@ export function AdminLoginForm() {
       }
 
       const { user, session } = await response.json()
-      
-      toast.success(`Welcome back, ${user.full_name || 'Admin'}!`)
+
+      // Removed welcome toast per admin preference
       router.push('/admin/dashboard')
-      
+
     } catch (error) {
       console.error('Admin login error:', error)
       toast.error(error instanceof Error ? error.message : 'Login failed')

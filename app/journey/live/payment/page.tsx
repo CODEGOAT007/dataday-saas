@@ -10,7 +10,11 @@ export default function LivePaymentPage() {
       <Card className="w-full max-w-xl bg-gray-900 border-gray-800 text-gray-100 shadow-xl">
         <div className="flex flex-col items-center justify-center min-h-[260px] p-6 text-center gap-4">
           <CardTitle className="text-2xl">Add Card on File</CardTitle>
-          <p className="text-gray-300">Capture card now so billing is ready after trial.</p>
+          <p className="text-gray-300">
+                {typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('offer') === 'intro3'
+                  ? 'Start today for $3. Full access for 30 days. Lock your lifetime $65 rate. Cancel anytime.'
+                  : 'Capture card now so billing is ready after trial.'}
+              </p>
 
           <CheckoutButton />
 

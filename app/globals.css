@@ -265,6 +265,12 @@
   @apply ring-2 ring-warning-500/50 bg-warning-50 dark:bg-warning-900;
 }
 
+/* Hide native password reveal/clear icons to avoid double-eye issues on some browsers */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .mobile-optimized {

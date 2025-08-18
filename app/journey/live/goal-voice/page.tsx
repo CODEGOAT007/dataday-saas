@@ -1,18 +1,71 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { Card, CardTitle } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function LiveGoalVoicePage() {
+  const router = useRouter()
+
+  // UI state
   const [recording, setRecording] = useState(false)
   const [recorded, setRecorded] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
   const [duration, setDuration] = useState(0)
+  const [countdown, setCountdown] = useState<number | null>(null)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null) // local preview
+  const [serverUrl, setServerUrl] = useState<string | null>(null) // uploaded URL
+
+  // Recording refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const lastBlobRef = useRef<Blob | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<number | null>(null)
+  const maxTimerRef = useRef<number | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+
+  // Waveform refs
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const dataArrayRef = useRef<Uint8Array | null>(null)
+  const animationRef = useRef<number | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  // Reason: Draw simple live waveform during recording for user feedback
+  const drawWave = () => {
+    const canvas = canvasRef.current
+    const analyser = analyserRef.current
+    const dataArray = dataArrayRef.current
+    if (!canvas || !analyser || !dataArray) return
+    const ctx = canvas.getContext('2d')!
+    const WIDTH = canvas.width
+    const HEIGHT = canvas.height
+
+    const render = () => {
+      analyser.getByteTimeDomainData(dataArray)
+      ctx.fillStyle = '#0b1220'
+      ctx.fillRect(0, 0, WIDTH, HEIGHT)
+      ctx.lineWidth = 2
+      ctx.strokeStyle = '#3b82f6'
+      ctx.beginPath()
+      const sliceWidth = WIDTH / dataArray.length
+      let x = 0
+      for (let i = 0; i < dataArray.length; i++) {
+        const v = dataArray[i] / 128.0
+        const y = (v * HEIGHT) / 2
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+        x += sliceWidth
+      }
+      ctx.lineTo(WIDTH, HEIGHT / 2)
+      ctx.stroke()
+      animationRef.current = requestAnimationFrame(render)
+    }
+    animationRef.current = requestAnimationFrame(render)
+  }
 
   useEffect(() => {
     if (recording) {
@@ -25,24 +78,80 @@ export default function LiveGoalVoicePage() {
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [recording])
 
+  // Reason: Clean up resources
+  const cleanup = () => {
+    if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    if (maxTimerRef.current) clearTimeout(maxTimerRef.current)
+    if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close() } catch {}
+    }
+    animationRef.current = null
+    maxTimerRef.current = null
+    streamRef.current = null
+    audioContextRef.current = null
+    analyserRef.current = null
+    dataArrayRef.current = null
+  }
+
+  const internalStart = async () => {
+    setError(null)
+    setUploadError(null)
+    setRecorded(false)
+    setServerUrl(null)
+    setAudioUrl(null)
+    setDuration(0)
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    streamRef.current = stream
+
+    // Setup audio graph for waveform
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    audioContextRef.current = ctx
+    const source = ctx.createMediaStreamSource(stream)
+    const analyser = ctx.createAnalyser()
+    analyser.fftSize = 1024
+    analyserRef.current = analyser
+    const bufferLength = analyser.frequencyBinCount
+    dataArrayRef.current = new Uint8Array(bufferLength)
+    source.connect(analyser)
+
+    drawWave()
+
+    const recorder = new MediaRecorder(stream)
+    chunksRef.current = []
+    recorder.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data)
+    recorder.onstop = () => {
+      const type = recorder.mimeType || 'audio/webm'
+      const blob = new Blob(chunksRef.current, { type })
+      lastBlobRef.current = blob
+      if (audioUrl) URL.revokeObjectURL(audioUrl)
+      const obj = URL.createObjectURL(blob)
+      setAudioUrl(obj)
+      if (blob.size > 0) setRecorded(true)
+      setRecording(false)
+      cleanup()
+    }
+    mediaRecorderRef.current = recorder
+    recorder.start()
+    setRecording(true)
+
+    // Auto-stop at 20s to keep it concise
+    maxTimerRef.current = window.setTimeout(() => stopRecording(), 20000) as unknown as number
+  }
+
   const startRecording = async () => {
     try {
-      setError(null)
-      setRecorded(false)
-      setDuration(0)
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const recorder = new MediaRecorder(stream)
-      chunksRef.current = []
-      recorder.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data)
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-        // Reason: We keep it local for now; later we can upload to Supabase storage
-        if (blob.size > 0) setRecorded(true)
+      // 3-2-1 countdown for a cleaner start
+      setCountdown(3)
+      for (let i = 2; i >= 0; i--) {
+        await new Promise(r => setTimeout(r, 1000))
+        setCountdown(i)
       }
-      mediaRecorderRef.current = recorder
-      recorder.start()
-      setRecording(true)
+      setCountdown(null)
+      await internalStart()
     } catch (e: any) {
+      setCountdown(null)
       setError(e?.message || 'Microphone access denied')
     }
   }
@@ -51,34 +160,93 @@ export default function LiveGoalVoicePage() {
     const rec = mediaRecorderRef.current
     if (rec && rec.state !== 'inactive') {
       rec.stop()
-      setRecording(false)
     }
   }
 
+  const upload = async () => {
+    if (!lastBlobRef.current) return
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const blob = lastBlobRef.current
+      const file = new File([blob], `goal-note.${blob.type.includes('mp4') ? 'm4a' : 'webm'}`, { type: blob.type })
+      const fd = new FormData()
+      fd.append('audio', file)
+      const res = await fetch('/api/upload/voice-note', { method: 'POST', body: fd })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || 'Upload failed')
+      setServerUrl(json.url)
+      try { sessionStorage.setItem('mdd_voice_note_url', json.url) } catch {}
+      return json.url as string
+    } catch (e: any) {
+      setUploadError(e?.message || 'Upload failed')
+      return null
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const onNext = async () => {
+    if (!serverUrl) {
+      const url = await upload()
+      if (!url) return
+    }
+    router.push('/journey/live/support-contacts')
+  }
+
+  const onRetake = () => {
+    setRecorded(false)
+    setServerUrl(null)
+    setUploadError(null)
+    if (audioUrl) URL.revokeObjectURL(audioUrl)
+    setAudioUrl(null)
+  }
+
   return (
-    <main className="min-h-screen bg-[#0B1220] flex flex-col items-center justify-center p-6 gap-6">
-      <Card className="w-full max-w-xl bg-gray-900 border-gray-800 text-gray-100 shadow-xl">
-        <div className="flex flex-col items-center justify-center min-h-[320px] p-6 text-center">
-          <CardTitle className="text-2xl mb-4">Record Goal Sentence (Voice)</CardTitle>
-          <p className="text-gray-300 mb-6">They speak the exact goal sentence you crafted together.</p>
-
-          {error && <div className="text-red-400 text-sm mb-3">{error}</div>}
-
-          <div className="flex items-center gap-3 mb-4">
-            {!recording ? (
-              <Button onClick={startRecording} className="bg-blue-600 hover:bg-blue-700">Start Recording</Button>
-            ) : (
-              <Button onClick={stopRecording} className="bg-red-600 hover:bg-red-700">Stop Recording</Button>
-            )}
-            <span className="text-gray-400 text-sm">{recording ? `Recording… ${duration}s` : recorded ? 'Recorded!' : 'Not recorded'}</span>
-          </div>
-
-          <Link href="/journey/live/support-contacts">
-            <Button className="bg-blue-600 hover:bg-blue-700" disabled={!recorded}>Next: Support Contacts</Button>
-          </Link>
+    <div className="w-full">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-4">
+          <h1 className="text-2xl font-semibold text-white">Record Goal Sentence (Voice)</h1>
+          <p className="text-gray-300">Have them speak the single daily goal in their own words. Aim for 5–20 seconds.</p>
         </div>
-      </Card>
-    </main>
+
+        <Card className="bg-gray-900 border-gray-800 text-gray-100 shadow-xl">
+          <div className="flex flex-col items-center justify-center min-h-[360px] p-6 text-center gap-4">
+            {error && <div className="text-red-400 text-sm">{error}</div>}
+            {uploadError && <div className="text-red-400 text-sm">{uploadError}</div>}
+
+            {countdown !== null ? (
+              <div className="text-6xl font-bold text-white">{countdown || 'Go'}</div>
+            ) : (
+              <>
+                <canvas ref={canvasRef as any} width={520} height={120} className="w-full max-w-xl rounded bg-black/40 border border-gray-800" />
+
+                <div className="flex items-center gap-3">
+                  {!recording ? (
+                    <Button onClick={startRecording} className="bg-blue-600 hover:bg-blue-700">Start</Button>
+                  ) : (
+                    <Button onClick={stopRecording} className="bg-red-600 hover:bg-red-700">Stop</Button>
+                  )}
+                  <span className="text-gray-400 text-sm">{recording ? `Recording… ${duration}s` : recorded ? 'Recorded!' : 'Not recorded'}</span>
+                </div>
+
+                {audioUrl && (
+                  <audio controls src={audioUrl} className="w-full max-w-xl" />
+                )}
+
+                <div className="flex gap-3">
+                  <Button variant="outline" className="border-gray-700" onClick={onRetake} disabled={!recorded || isUploading}>Retake</Button>
+                  <Button onClick={onNext} className="bg-blue-600 hover:bg-blue-700" disabled={!recorded || isUploading}>
+                    {isUploading ? 'Uploading…' : 'Next: Support Contacts'}
+                  </Button>
+                </div>
+
+                <p className="text-xs text-gray-400">Tip: Hold the phone close and speak clearly. We’ll save this to share with their support circle.</p>
+              </>
+            )}
+          </div>
+        </Card>
+      </div>
+    </div>
   )
 }
-

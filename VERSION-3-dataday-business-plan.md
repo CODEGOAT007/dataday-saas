@@ -1,5 +1,13 @@
 # Dataday: The Universal Life Progress System
-## *"We make sure your goals happen. You celebrate the success."*
+## *"Make YOUR goals OUR problem."*
+
+### Saved headline/taglines (approved for marketing/PWA)
+- Make YOUR goals OUR problem.
+- You bring the goal, we bring the guardrails.
+- Turn “someday” into “today”.
+- When life gets messy, we keep you on track.
+- Progress you can trust.
+- A system you can count on.
 
 ### Strategic Business Plan & Market Analysis
 **Version 3.0 - January 2025**
@@ -36,6 +44,29 @@
 - Year 5: 5M users → $3.9B ARR
 
 ---
+
+## Company Profile & Founder
+
+- Legal Business Name: MYDATADAY LLC
+- Company Type: Limited Liability Company (LLC)
+- Industry: Software
+- Website: https://mydataday.app
+- Short Description: MyDataDay is a subscription app for goal planning and accountability. We offer a range of custom solutions to keep people making daily progress toward their most important goals. We charge during checkout and renew monthly until canceled.
+- Legal Address: 3101 North Central Avenue, STE 183 6186, Phoenix, AZ 85012, United States
+- Physical Address: 917 West Glendale Avenue, Unit 9, Phoenix, AZ 85021, United States
+- Business Phone: +1 312-395-0224
+- EIN: Verified on file
+- Formation Documentation: Filed Articles (AZ) on file (FiledArticles.pdf)
+
+Founder & Ownership
+- Founder: Christopher Loy (US Citizen)
+- Title: Founder
+- Email: hello@mydataday.app
+- Ownership: 100%
+- Founder Phone: +1 312-395-0224
+- Date of Birth: 1991-02-04
+- Mailing Address: 917 West Glendale Avenue, Unit 9, Phoenix, AZ 85021, United States
+
 
 ## The Problem: Universal Time Crisis
 
@@ -364,6 +395,60 @@ Every human being shares the same fundamental problem: **We don't know where our
 - <10% monthly churn
 - $780K ARR
 
+### Phase 1.5: Enhanced Admin Experience (After 100 Users)
+**Objective:** Create visual CRM and admin workflow optimization
+
+**Features:**
+- **Visual Customer Journey CRM:** Mono-page timeline showing each lead's complete journey from untouched to current day, displayed vertically with first interaction at top and current day at bottom
+- **Admin Workflow Guide:** Integrated step-by-step guidance within the visual timeline
+- **Journey Analytics:** Visual patterns and insights from the customer journey data
+- **Automated Journey Tracking:** Real-time updates to the visual timeline as customers progress
+
+**Success Metrics:**
+- 50% reduction in admin time per lead
+
+### Design & Style References
+- Fellow (fellow.app) — clean, modern meeting UI and dark mode patterns we admire for admin tooling and note-taking flows.
+
+
+### Telephony & Live Transcription Roadmap
+- Current Mode (Now): Use regular personal cell phone for calls; no call recordings. During calls, type notes directly in the Admin Call Flow “Live Notes” box. Optional: use local dictation (e.g., Aqua Voice) to speed up note-taking. No audio is stored.
+
+- Phase 1: In-App Live Transcript (Baseline)
+  - Browser SpeechRecognition (Chrome) for interim text while speaking (local mic only)
+  - Display interim → finalize lines in the transcript pane; allow inline edits
+  - Auto-save final lines and notes to DB per call_id
+  - Limitation: does not capture remote caller audio
+
+- Phase 2: WebRTC Softphone + Deepgram Realtime (Chosen Path)
+  - Provider: Telnyx WebRTC (Web + Android path)
+  - Capture local (agent) and remote (caller) WebRTC tracks; merge to stereo (L/R)
+  - Stream 16 kHz PCM to Deepgram Realtime with multichannel=true for interim/final
+  - Transcript UI: editable lines, autosave; notes pane; consent indicator
+  - Storage: lead_calls, lead_call_transcripts, lead_call_notes tables
+  - Benefits: dual-channel accuracy, low latency, coaching features (“whisper”)
+
+- Phase 3 (Optional): Local Audio Capture Route
+  - Windows VoiceMeeter stereo mapping (Agent=Left, Caller=Right) with any softphone
+  - Browser or helper app streams stereo PCM to Deepgram Realtime
+  - Use when provider constraints or for desk phone/mobile audio bridged to PC
+
+- Phase 4 (Optional): Self-Hosted PBX Control
+  - Asterisk/FreePBX or FreeSWITCH
+  - Dual-channel at server via MixMonitor (rx/tx/stereo .raw) or SIPREC (RFC 7866)
+  - Softphones (Linphone) on Android/PC; server-side media fork to STT
+
+- Compliance & Caller Trust
+  - Later: SHAKEN A-level attestation and Branded Calling (via provider) for answer rates
+  - Consent indicator + optional prompt (jurisdiction-specific)
+
+Decision Status
+- Immediate operations: regular cell phone, no recordings
+- Build target: Phase 2 WebRTC + Deepgram transcription integrated into Admin Call Flow
+
+- 95%+ lead workflow completion rate
+- Visual journey insights driving conversion optimization
+
 ### Phase 2: Adaptive Expansion (Months 6-18)
 **Objective:** Scale globally with enhanced features
 
@@ -481,6 +566,15 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ### Near-term Sales Ops Notes
 - Future improvement: Prevent duplicate leads by phone (normalize to digits-only, unique index, upsert in API)
+
+### Pricing Experiment: $3 Intro vs Free 30 Days (Offer Flag)
+- Rationale: Collect card with a credible $3 “setup/credits verification” to reduce suspicion and increase card-on-file conversion.
+- Implementation (current): Intro flow charges $3 now, saves card, then creates a 30‑day trial subscription. Toggle via `?offer=intro3`.
+- Copy: “Start today for $3. Full access for 30 days. Lock your lifetime $65 rate. Cancel anytime.”
+- Refund policy: 100% refund of the $3 within 7 days upon request.
+- Metrics to track: Landing→Checkout, Card Added, D7 activation, D30 retention/billed, refunds/chargebacks.
+- Next: Add Day‑27 renewal reminder via n8n (email + SMS). [Note: defer implementation; see Operations backlog]
+
 - Add SMS alert to coach on new lead (Twilio) after email is proven stable
 
 
@@ -636,6 +730,23 @@ Year 5: 5,000,000 users → $3.9B ARR → $325M MRR
 **Investment Thesis Documentation:**
 - Automated pitch deck generation with live data
 - Board presentation templates with real-time KPIs
+
+---
+
+## Operational Notes & To‑Dos
+
+- Temporary payouts bank: Wells Fargo personal account ending ••7270 (routing 121042882). Replace with Mercury Business Checking once Mercury approval completes. Owner: Christopher Loy. Target: within 1–3 business days after approval.
+- Stripe Tax automation: Revisit enabling Stripe Tax for US state nexus management and future global VAT/GST. Action: research thresholds, auto‑collection, and reporting workflows; propose rollout plan.
+- Support contact consistency: Ensure Stripe “Public details” match business plan and website (descriptor MYDATADAY, support email/phone, AZ address).
+- Webhook reliability: Monitor Stripe webhook delivery on subscription events; add alerting if needed.
+
+- Payments strategy: Stay on Stripe now; evaluate Clerk Billing later
+  - Decision (current): Remain on Stripe for subscriptions (including the `intro3` flow) until further notice.
+  - Rationale: Clerk Billing is promising but currently missing features we rely on or may need soon (USD-only; no built-in tax/VAT; no free trials/coupons; no seat-/metered billing; paid add-ons pending; still maturing).
+  - Re-evaluation triggers: Multi-currency; tax/VAT; free trials; coupons/discounts; seat-based billing; metered/usage-based billing; paid add-ons; GA/stable status for needed features; clear migration path for existing subscribers.
+  - Operational follow-ups: Track Clerk Billing roadmap monthly; reassess by 2025-12-01. Owner: TBD. Criteria to switch include feature parity and clear net ops savings vs. maintaining Stripe webhooks.
+
+
 - Investor update automation
 - Due diligence data room preparation
 
