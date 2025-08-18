@@ -29,6 +29,9 @@ export function GoalCreationFlow() {
     title: '',
     description: '',
     frequency: '',
+    duration: ''
+  })
+
   const params = useSearchParams()
   const sessionId = params.get('session')
   const { session, patch } = useIntroSession(sessionId)
@@ -39,9 +42,6 @@ export function GoalCreationFlow() {
     const s = (session?.current_step as Step | undefined) || 'goal-details'
     setCurrentStep(s)
   }, [session?.current_step, sessionId])
-
-    duration: ''
-  })
   const [existingGoals, setExistingGoals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
