@@ -111,7 +111,8 @@ export default function LiveGoalVoicePage() {
     setError(null)
     setUploadError(null)
     setRecorded(false)
-    setServerUrl(null)
+    setSignedPreviewUrl(null)
+    setStoragePath(null)
     setAudioUrl(null)
     setDuration(0)
 
@@ -221,7 +222,8 @@ export default function LiveGoalVoicePage() {
 
   const onRetake = () => {
     setRecorded(false)
-    setServerUrl(null)
+    setSignedPreviewUrl(null)
+    setStoragePath(null)
     setUploadError(null)
     if (audioUrl) URL.revokeObjectURL(audioUrl)
     setAudioUrl(null)
