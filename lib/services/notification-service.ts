@@ -14,10 +14,12 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Twilio client (lazy loaded to avoid issues if credentials not set)
 let twilioClient: any = null
-const getTwilioClient = () => {
+const getTwilioClient = async () => {
   if (!twilioClient && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-    const twilio = require('twilio')
-    twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+    // Reason: Twilio v5 is ESM-only; use dynamic import that works in serverless
+    const twilioMod: any = await import('twilio')
+    const twilioInit = twilioMod?.default || twilioMod
+    twilioClient = twilioInit(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
   }
   return twilioClient
 }
@@ -27,30 +29,48 @@ export class NotificationService {
   /**
    * Send SMS notification to Emergency Support Team member
    */
-  static async sendSMS(phone: string, message: string): Promise<NotificationResult> {
+  static async sendSMS(phone: string, message: string, opts?: { forceSend?: boolean }): Promise<NotificationResult> {
     try {
-      // Reason: In development, just log the message
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`📱 SMS to ${phone}:`, message)
+      // Reason: In development, allow forcing real send when explicitly enabled
+      const allowDevSend = (process.env.ALLOW_DEV_SMS === 'true') || !!opts?.forceSend
+      if (process.env.NODE_ENV === 'development' && !allowDevSend) {
+        console.log(`📱 [DEV LOG ONLY] SMS to ${phone}:`, message)
+        console.log('💡 Set ALLOW_DEV_SMS=true or pass opts.forceSend to actually send in dev')
         return { success: true, messageId: `dev-sms-${Date.now()}` }
       }
 
-      const twilio = getTwilioClient()
+      // Short-term provider: SMS8 (sends via your Android device)
+      if ((process.env.SMS_PROVIDER || '').toLowerCase() === 'sms8') {
+        return await NotificationService.sendViaSMS8(phone, message)
+      }
+
+      // Default provider: Twilio
+      const twilio = await getTwilioClient()
       if (!twilio) {
-        console.warn('Twilio not configured, falling back to mock SMS')
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('Twilio not configured: missing TWILIO_ACCOUNT_SID/TWILIO_AUTH_TOKEN')
+        }
+        console.warn('Twilio not configured, falling back to mock SMS (non-production)')
         console.log(`📱 SMS to ${phone}:`, message)
         return { success: true, messageId: `mock-sms-${Date.now()}` }
       }
 
-      if (!process.env.TWILIO_PHONE_NUMBER) {
-        throw new Error('TWILIO_PHONE_NUMBER environment variable not set')
+      if (!process.env.TWILIO_PHONE_NUMBER && !process.env.TWILIO_MESSAGING_SERVICE_SID) {
+        throw new Error('Missing TWILIO_PHONE_NUMBER or TWILIO_MESSAGING_SERVICE_SID')
       }
 
-      const result = await twilio.messages.create({
+      const msgConfig: any = {
         body: message,
-        from: process.env.TWILIO_PHONE_NUMBER,
         to: phone
-      })
+      }
+      // Reason: Prefer Messaging Service if configured (A2P-compliant path)
+      if (process.env.TWILIO_MESSAGING_SERVICE_SID) {
+        msgConfig.messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID
+      } else {
+        msgConfig.from = process.env.TWILIO_PHONE_NUMBER
+      }
+
+      const result = await twilio.messages.create(msgConfig)
 
       console.log(`✅ SMS sent to ${phone}, SID: ${result.sid}`)
       return { success: true, messageId: result.sid }
@@ -60,6 +80,51 @@ export class NotificationService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown SMS error'
+      }
+    }
+  }
+
+  // Reason: SMS8 provider support for immediate sending via Android device
+  private static async sendViaSMS8(phone: string, message: string): Promise<NotificationResult> {
+    try {
+      const apiKey = process.env.SMS8_API_KEY
+      const deviceSpec = process.env.SMS8_DEVICE_SPEC // e.g., "182|0" or "182|0,182|1"
+      const baseUrl = process.env.SMS8_BASE_URL || 'https://app.sms8.io'
+      if (!apiKey) throw new Error('SMS8_API_KEY not set')
+      if (!deviceSpec) throw new Error('SMS8_DEVICE_SPEC not set (e.g., 182|0)')
+
+      const devicesArr = deviceSpec.split(',').map(s => s.trim()).filter(Boolean)
+      const devices = JSON.stringify(devicesArr)
+
+      const url = new URL('/services/send.php', baseUrl)
+      const qs = new URLSearchParams()
+      qs.set('key', apiKey)
+      qs.set('number', phone)
+      qs.set('message', message)
+      qs.set('devices', devices)
+      qs.set('type', 'sms')
+      // Reason: Use priority send for immediate delivery during live onboarding calls
+      qs.set('prioritize', '1')
+      url.search = qs.toString()
+
+      const resp = await fetch(url.toString(), { method: 'GET' })
+      const data = await resp.json().catch(() => null)
+      if (!resp.ok || !data) {
+        throw new Error(`SMS8 request failed: HTTP ${resp.status}`)
+      }
+      if (data.success !== true) {
+        const errMsg = data?.error?.message || 'Unknown SMS8 error'
+        throw new Error(errMsg)
+      }
+
+      const first = data?.data?.messages?.[0]
+      const msgId = first?.ID?.toString?.() || first?.groupID || `sms8-${Date.now()}`
+      console.log(`✅ SMS8 sent to ${phone}, ID: ${msgId}`)
+      return { success: true, messageId: msgId }
+    } catch (e) {
+      return {
+        success: false,
+        error: e instanceof Error ? e.message : 'SMS8 send failed'
       }
     }
   }
@@ -118,7 +183,7 @@ export class NotificationService {
         return { success: true, messageId: `dev-voice-${Date.now()}` }
       }
 
-      const twilio = getTwilioClient()
+      const twilio = await getTwilioClient()
       if (!twilio) {
         console.warn('Twilio not configured, falling back to mock voicemail')
         console.log(`📞 Voicemail to ${phone}:`, message)

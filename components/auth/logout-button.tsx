@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
-import { LogOut } from 'lucide-react'
+import { toast } from 'sonner'
+import { LogOut, Loader2 } from 'lucide-react'
 
 interface LogoutButtonProps {
   variant?: 'default' | 'ghost' | 'outline'
@@ -24,8 +25,11 @@ export function LogoutButton({
   const handleLogout = async () => {
     try {
       await signOut()
+      // Reason: Short, modern toast that doesn’t linger
+      toast.success('Signed out', { id: 'logout', duration: 1200 })
     } catch (error) {
       console.error('Logout error:', error)
+      toast.error('Logout failed. Please try again.', { id: 'logout-error' })
     }
   }
 
@@ -37,7 +41,13 @@ export function LogoutButton({
       disabled={isSigningOut}
       className={`flex items-center gap-2 ${className || ''}`}
     >
-      {showIcon && <LogOut className="h-4 w-4" />}
+      {showIcon && (
+        isSigningOut ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )
+      )}
       {children || (isSigningOut ? 'Signing out...' : 'Sign Out')}
     </Button>
   )

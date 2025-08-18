@@ -1,3 +1,19 @@
+# E2E tests with Playwright
+
+We use Playwright for end-to-end tests.
+
+- Config: `playwright.config.ts`
+- Tests live in `tests/e2e`
+
+Run locally:
+
+```
+npx playwright install
+npx playwright test
+```
+
+This will spin up the Next dev server and run Chromium tests. The admin E2E creates a new phone lead via `/api/phone-leads/notify`, logs in as admin (using dev creds in the repo), and opens the dedicated call-flow page.
+
 # MyDataday - Your Personal Goal Achievement App
 
 > Your personal goal achievement app with social accountability. Track progress, get AI coaching, activate your Emergency Support Team.
@@ -93,7 +109,7 @@ mydataday/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm/yarn/pnpm
 - Supabase account
 - OpenAI API key
@@ -115,7 +131,7 @@ mydataday/
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Fill in your environment variables:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -191,7 +207,7 @@ npm run test:coverage
 ### AI Personas
 
 - **Coach**: Encouraging and direct
-- **Friend**: Supportive and understanding  
+- **Friend**: Supportive and understanding
 - **Mentor**: Wise and strategic
 
 ## 🔐 Security
@@ -206,9 +222,19 @@ npm run test:coverage
 ### Vercel (Recommended)
 
 ```bash
-# Deploy to Vercel
-vercel --prod
+# One-time setup
+npm run vercel:login
+npm run vercel:link
+
+# Fast, production deploy
+npm run deploy
+
+# Force rebuild deploy
+npm run deploy:force
 ```
+
+- Primary domain: https://mydataday.app
+- Inspect latest deploys in Vercel dashboard via `npx vercel open` or the Inspect link printed in CLI.
 
 ### Environment Variables
 
@@ -219,6 +245,10 @@ Set these in your deployment platform:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `OPENAI_API_KEY`
 - `NEXT_PUBLIC_APP_URL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_INTRO_SETUP_PRICE_ID`  # $3 one-time intro price (for offer=intro3)
+- Tier price IDs: `STRIPE_BASIC_PRICE_ID`, `STRIPE_PRO_PRICE_ID`, `STRIPE_PREMIUM_PRICE_ID`, `STRIPE_ELITE_PRICE_ID`
 
 ## 📈 Monitoring
 

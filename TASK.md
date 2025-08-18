@@ -147,3 +147,16 @@
 
 *Last Updated: 2025-01-26*
 *Current Focus: AI Personas System Implementation*
+
+
+## 📝 Ad hoc Tasks (Logged)
+- [x] 2025-08-18: Auth hardening + UX polish
+  - Removed sessionStorage password stashing and background sign-in attempts
+  - Signup uses server-confirmed user creation and normal sign-in + cookie sync
+  - Improved Record Goal Sentence: countdown, waveform, auto-stop, playback/retake, real upload to /api/upload/voice-note, share URL via sessionStorage for next step
+  - Support Contacts now shows recorded welcome voice note if present
+  - Fixed hydration mismatch in app/layout.tsx preloader CSS
+
+- [x] 2025-08-17: Signup flow now redirects new users to Live Onboarding → Record Goal Voice page. Magic link callback also returns to this page via redirectTo. (Requested: land on Record Goal Affirmation sentence page)
+
+- [x] 2025-08-12: Admin Dashboard – Lead Workspace dial-first branching UI. Added Live Call opener + Dial button, and separate No-Answer Text+VM script in the workspace; relabeled step to "Reached Out – Dialed" to reflect dial-first behavior.

@@ -1,5 +1,13 @@
 # Dataday: The Universal Life Progress System
-## *"We make sure your goals happen. You celebrate the success."*
+## *"Make YOUR goals OUR problem."*
+
+### Saved headline/taglines (approved for marketing/PWA)
+- Make YOUR goals OUR problem.
+- You bring the goal, we bring the guardrails.
+- Turn “someday” into “today”.
+- When life gets messy, we keep you on track.
+- Progress you can trust.
+- A system you can count on.
 
 ### Strategic Business Plan & Market Analysis
 **Version 3.0 - January 2025**
@@ -32,10 +40,33 @@
 
 **Financial Projections:**
 - Year 1: 1,000 users → $780K ARR
-- Year 3: 500,000 users → $390M ARR  
+- Year 3: 500,000 users → $390M ARR
 - Year 5: 5M users → $3.9B ARR
 
 ---
+
+## Company Profile & Founder
+
+- Legal Business Name: MYDATADAY LLC
+- Company Type: Limited Liability Company (LLC)
+- Industry: Software
+- Website: https://mydataday.app
+- Short Description: MyDataDay is a subscription app for goal planning and accountability. We offer a range of custom solutions to keep people making daily progress toward their most important goals. We charge during checkout and renew monthly until canceled.
+- Legal Address: 3101 North Central Avenue, STE 183 6186, Phoenix, AZ 85012, United States
+- Physical Address: 917 West Glendale Avenue, Unit 9, Phoenix, AZ 85021, United States
+- Business Phone: +1 312-395-0224
+- EIN: Verified on file
+- Formation Documentation: Filed Articles (AZ) on file (FiledArticles.pdf)
+
+Founder & Ownership
+- Founder: Christopher Loy (US Citizen)
+- Title: Founder
+- Email: hello@mydataday.app
+- Ownership: 100%
+- Founder Phone: +1 312-395-0224
+- Date of Birth: 1991-02-04
+- Mailing Address: 917 West Glendale Avenue, Unit 9, Phoenix, AZ 85021, United States
+
 
 ## The Problem: Universal Time Crisis
 
@@ -257,6 +288,95 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ---
 
+## Corporate Benefits Integration Strategy
+
+### B2B Enterprise Market Expansion (USA & Canada)
+
+**Market Opportunity:** The corporate wellness market represents a $47 billion opportunity with 156 million employees across USA and Canada seeking meaningful benefits beyond traditional health insurance. Companies are increasingly investing in employee wellbeing programs that drive engagement, retention, and productivity.
+
+### Corporate Benefits Value Proposition
+
+**For Employers:**
+- **Measurable ROI:** Track employee engagement and goal completion rates
+- **Retention Tool:** Employees with active Support Circles show 40% higher job satisfaction
+- **Productivity Gains:** Goal-oriented employees demonstrate 25% higher performance
+- **Wellness Program Enhancement:** Complement existing health benefits with life achievement support
+- **Team Building:** Support Circle integration creates stronger workplace relationships
+
+**For Employees:**
+- **Personal Development:** Professional and personal goal achievement support
+- **Work-Life Integration:** Balance career goals with personal aspirations
+- **Social Connection:** Strengthen relationships with colleagues and family
+- **Stress Reduction:** Systematic approach to life management reduces overwhelm
+- **Career Advancement:** Goal tracking for professional development
+
+### Enterprise Pricing Model
+
+**Corporate Basic ($25/employee/month):**
+- Individual goal tracking with Support Circle activation
+- Company-wide wellness challenges and competitions
+- Basic HR analytics dashboard
+- Email support and onboarding
+- Minimum 100 employees
+
+**Corporate Professional ($45/employee/month):**
+- Everything in Basic tier
+- Team goal collaboration features
+- Advanced HR analytics and reporting
+- Dedicated corporate success manager
+- Custom company branding and integration
+- Minimum 250 employees
+
+**Corporate Executive ($65/employee/month):**
+- Everything in Professional tier
+- Leadership development goal templates
+- Executive coaching integration
+- Advanced team performance analytics
+- Priority support and custom integrations
+- C-suite executive dashboards
+- Minimum 500 employees
+
+**Volume Discounts:**
+- 100-499 employees: 10% discount
+- 500-999 employees: 15% discount
+- 1000+ employees: 20% discount + custom enterprise pricing
+
+### Corporate Revenue Projections
+
+**Year 1 Corporate Goals:**
+- 10 pilot companies (average 200 employees each)
+- $600K ARR from corporate segment
+- 2,000 corporate users
+
+**Year 2 Corporate Goals:**
+- 100 corporate clients across USA/Canada
+- $15M ARR from corporate segment (28% of total revenue)
+- 25,000 corporate users
+
+**Year 3 Corporate Goals:**
+- 500 corporate clients
+- $75M ARR from corporate segment (19% of total revenue)
+- 150,000 corporate users
+
+**Year 5 Corporate Goals:**
+- 2,000+ corporate clients
+- $500M ARR from corporate segment (13% of total revenue)
+- 1,000,000+ corporate users
+
+### Competitive Advantage in Corporate Market
+
+**Unique Differentiators:**
+- Only platform that activates employees' personal Support Circles
+- Measurable impact on both personal and professional goals
+- Proven 90%+ success rates vs. traditional wellness programs
+- Integration of work and life goal achievement
+- Social accountability extends beyond workplace
+
+**Market Positioning:**
+"The only corporate benefit that guarantees employee goal achievement through their personal Support Circle network."
+
+---
+
 ## Product Strategy & Roadmap
 
 ### Phase 1: Single Goal Excellence (Months 1-6)
@@ -274,6 +394,60 @@ Every human being shares the same fundamental problem: **We don't know where our
 - 80%+ goal achievement rate
 - <10% monthly churn
 - $780K ARR
+
+### Phase 1.5: Enhanced Admin Experience (After 100 Users)
+**Objective:** Create visual CRM and admin workflow optimization
+
+**Features:**
+- **Visual Customer Journey CRM:** Mono-page timeline showing each lead's complete journey from untouched to current day, displayed vertically with first interaction at top and current day at bottom
+- **Admin Workflow Guide:** Integrated step-by-step guidance within the visual timeline
+- **Journey Analytics:** Visual patterns and insights from the customer journey data
+- **Automated Journey Tracking:** Real-time updates to the visual timeline as customers progress
+
+**Success Metrics:**
+- 50% reduction in admin time per lead
+
+### Design & Style References
+- Fellow (fellow.app) — clean, modern meeting UI and dark mode patterns we admire for admin tooling and note-taking flows.
+
+
+### Telephony & Live Transcription Roadmap
+- Current Mode (Now): Use regular personal cell phone for calls; no call recordings. During calls, type notes directly in the Admin Call Flow “Live Notes” box. Optional: use local dictation (e.g., Aqua Voice) to speed up note-taking. No audio is stored.
+
+- Phase 1: In-App Live Transcript (Baseline)
+  - Browser SpeechRecognition (Chrome) for interim text while speaking (local mic only)
+  - Display interim → finalize lines in the transcript pane; allow inline edits
+  - Auto-save final lines and notes to DB per call_id
+  - Limitation: does not capture remote caller audio
+
+- Phase 2: WebRTC Softphone + Deepgram Realtime (Chosen Path)
+  - Provider: Telnyx WebRTC (Web + Android path)
+  - Capture local (agent) and remote (caller) WebRTC tracks; merge to stereo (L/R)
+  - Stream 16 kHz PCM to Deepgram Realtime with multichannel=true for interim/final
+  - Transcript UI: editable lines, autosave; notes pane; consent indicator
+  - Storage: lead_calls, lead_call_transcripts, lead_call_notes tables
+  - Benefits: dual-channel accuracy, low latency, coaching features (“whisper”)
+
+- Phase 3 (Optional): Local Audio Capture Route
+  - Windows VoiceMeeter stereo mapping (Agent=Left, Caller=Right) with any softphone
+  - Browser or helper app streams stereo PCM to Deepgram Realtime
+  - Use when provider constraints or for desk phone/mobile audio bridged to PC
+
+- Phase 4 (Optional): Self-Hosted PBX Control
+  - Asterisk/FreePBX or FreeSWITCH
+  - Dual-channel at server via MixMonitor (rx/tx/stereo .raw) or SIPREC (RFC 7866)
+  - Softphones (Linphone) on Android/PC; server-side media fork to STT
+
+- Compliance & Caller Trust
+  - Later: SHAKEN A-level attestation and Branded Calling (via provider) for answer rates
+  - Consent indicator + optional prompt (jurisdiction-specific)
+
+Decision Status
+- Immediate operations: regular cell phone, no recordings
+- Build target: Phase 2 WebRTC + Deepgram transcription integrated into Admin Call Flow
+
+- 95%+ lead workflow completion rate
+- Visual journey insights driving conversion optimization
 
 ### Phase 2: Adaptive Expansion (Months 6-18)
 **Objective:** Scale globally with enhanced features
@@ -390,6 +564,20 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ---
 
+### Near-term Sales Ops Notes
+- Future improvement: Prevent duplicate leads by phone (normalize to digits-only, unique index, upsert in API)
+
+### Pricing Experiment: $3 Intro vs Free 30 Days (Offer Flag)
+- Rationale: Collect card with a credible $3 “setup/credits verification” to reduce suspicion and increase card-on-file conversion.
+- Implementation (current): Intro flow charges $3 now, saves card, then creates a 30‑day trial subscription. Toggle via `?offer=intro3`.
+- Copy: “Start today for $3. Full access for 30 days. Lock your lifetime $65 rate. Cancel anytime.”
+- Refund policy: 100% refund of the $3 within 7 days upon request.
+- Metrics to track: Landing→Checkout, Card Added, D7 activation, D30 retention/billed, refunds/chargebacks.
+- Next: Add Day‑27 renewal reminder via n8n (email + SMS). [Note: defer implementation; see Operations backlog]
+
+- Add SMS alert to coach on new lead (Twilio) after email is proven stable
+
+
 ## Technology & Operations
 
 ### Technical Architecture Summary
@@ -428,7 +616,7 @@ Every human being shares the same fundamental problem: **We don't know where our
 
 ```
 Year 1: 1,000 users → $780K ARR → $65K MRR
-Year 2: 50,000 users → $39M ARR → $3.25M MRR  
+Year 2: 50,000 users → $39M ARR → $3.25M MRR
 Year 3: 500,000 users → $390M ARR → $32.5M MRR
 Year 4: 2,000,000 users → $1.56B ARR → $130M MRR
 Year 5: 5,000,000 users → $3.9B ARR → $325M MRR
@@ -503,6 +691,73 @@ Year 5: 5,000,000 users → $3.9B ARR → $325M MRR
 **Beta Testing:** 50 users, 85% still active after 30 days, 4.8/5 rating
 
 **Technical Foundation:** Built on proven infrastructure used by Notion (Vercel), Linear (PostgreSQL), and Stripe (Retool for operations)
+
+---
+
+## Strategic Data Room & Investment Intelligence
+
+### McKinsey-Style Data Room (GenSpark Integration)
+
+**Executive Dashboard Suite:** We leverage GenSpark AI to create institutional-grade data rooms that rival McKinsey & Company's strategic presentations. Our data room provides real-time business intelligence with consulting-level sophistication.
+
+**Core Data Room Components:**
+
+**Market Intelligence:**
+- Total Addressable Market analysis with geographic segmentation
+- Competitive landscape positioning matrices
+- Market penetration forecasting models
+- Customer acquisition cost optimization scenarios
+
+**Financial Performance:**
+- Unit economics deep-dive with cohort analysis
+- Revenue trajectory modeling (conservative/aggressive scenarios)
+- Gross margin optimization tracking
+- Customer lifetime value progression
+- Burn rate and runway projections
+
+**Operational Metrics:**
+- Support Circle activation rates and effectiveness
+- AI vs. human intervention cost analysis
+- Scalability metrics (users per support team member)
+- Technology infrastructure cost optimization
+
+**Risk Assessment:**
+- Competitive threat analysis
+- Regulatory compliance frameworks
+- Technology dependency risk matrices
+- Market timing sensitivity analysis
+
+**Investment Thesis Documentation:**
+- Automated pitch deck generation with live data
+- Board presentation templates with real-time KPIs
+
+---
+
+## Operational Notes & To‑Dos
+
+- Temporary payouts bank: Wells Fargo personal account ending ••7270 (routing 121042882). Replace with Mercury Business Checking once Mercury approval completes. Owner: Christopher Loy. Target: within 1–3 business days after approval.
+- Stripe Tax automation: Revisit enabling Stripe Tax for US state nexus management and future global VAT/GST. Action: research thresholds, auto‑collection, and reporting workflows; propose rollout plan.
+- Support contact consistency: Ensure Stripe “Public details” match business plan and website (descriptor MYDATADAY, support email/phone, AZ address).
+- Webhook reliability: Monitor Stripe webhook delivery on subscription events; add alerting if needed.
+
+- Payments strategy: Stay on Stripe now; evaluate Clerk Billing later
+  - Decision (current): Remain on Stripe for subscriptions (including the `intro3` flow) until further notice.
+  - Rationale: Clerk Billing is promising but currently missing features we rely on or may need soon (USD-only; no built-in tax/VAT; no free trials/coupons; no seat-/metered billing; paid add-ons pending; still maturing).
+  - Re-evaluation triggers: Multi-currency; tax/VAT; free trials; coupons/discounts; seat-based billing; metered/usage-based billing; paid add-ons; GA/stable status for needed features; clear migration path for existing subscribers.
+  - Operational follow-ups: Track Clerk Billing roadmap monthly; reassess by 2025-12-01. Owner: TBD. Criteria to switch include feature parity and clear net ops savings vs. maintaining Stripe webhooks.
+
+
+- Investor update automation
+- Due diligence data room preparation
+
+**GenSpark Implementation Benefits:**
+- **Professional Grade:** McKinsey-quality visualizations and analysis
+- **Real-Time Intelligence:** Live data integration from all business systems
+- **Scenario Planning:** Dynamic modeling for different growth trajectories
+- **Executive Communication:** Automated executive summaries and insights
+- **Investment Ready:** Institutional-grade documentation for funding rounds
+
+This strategic data room positions Dataday as a data-driven organization with institutional-level business intelligence capabilities, essential for scaling to our $1B+ valuation target.
 
 ---
 

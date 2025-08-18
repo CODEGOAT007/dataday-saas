@@ -1,8 +1,8 @@
 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Blue circular background -->
-  <circle cx="12" cy="12" r="12" fill="#2563eb"/>
-  
-  <!-- Calendar with checkmark (white on blue) -->
+  <!-- Black circular background -->
+  <circle cx="12" cy="12" r="12" fill="#000"/>
+
+  <!-- Calendar with checkmark (white on black) -->
   <g stroke="white" stroke-width="1.5" fill="none">
     <!-- Calendar body -->
     <rect x="6" y="7" width="12" height="10" rx="1.5" ry="1.5" />

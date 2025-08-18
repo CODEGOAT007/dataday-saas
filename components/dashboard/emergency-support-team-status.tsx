@@ -19,12 +19,12 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ProfileAvatar } from '@/components/ui/profile-avatar'
-import { useEmergencySupportTeam, useEscalationLogs } from '@/hooks/use-emergency-support-team'
+import { useSupportCircle, useEscalationLogs } from '@/hooks/use-support-circle'
 import Link from 'next/link'
 
-export function EmergencySupportTeamStatus() {
-  const { emergencySupportTeam, activeMembers, consentedMembers, hasEmergencySupportTeam, isLoading } = useEmergencySupportTeam()
-  const { recentEscalations, emergencySupportTeamNotifications } = useEscalationLogs()
+export function SupportCircleStatus() {
+  const { supportCircle, activeMembers, consentedMembers, hasSupportCircle, isLoading } = useSupportCircle()
+  const { recentEscalations, supportCircleNotifications } = useEscalationLogs()
 
   if (isLoading) {
     return (
@@ -34,7 +34,7 @@ export function EmergencySupportTeamStatus() {
             <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            Emergency Support Team
+            Support Circle
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -47,7 +47,7 @@ export function EmergencySupportTeamStatus() {
     )
   }
 
-  if (!hasEmergencySupportTeam) {
+  if (!hasSupportCircle) {
     return (
       <Card className="relative overflow-hidden border-2 border-dashed border-orange-200">
         <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-r from-orange-500/10 to-red-500/10" />
@@ -57,7 +57,7 @@ export function EmergencySupportTeamStatus() {
             <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            Emergency Support Team
+            Support Circle
             <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
               Not Set Up
             </Badge>
@@ -74,9 +74,9 @@ export function EmergencySupportTeamStatus() {
               Add 1-5 people who care about your success. They'll help you achieve 90%+ success rates!
             </p>
             <Button asChild className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
-              <Link href="/onboarding/emergency-support-team">
+              <Link href="/onboarding/support-circle">
                 <Plus className="h-4 w-4 mr-2" />
-                Set Up Emergency Support Team
+                Set Up Support Circle
               </Link>
             </Button>
           </div>
@@ -127,7 +127,7 @@ export function EmergencySupportTeamStatus() {
           <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
             <Shield className="h-5 w-5 text-white" />
           </div>
-          Emergency Support Team
+          Support Circle
           <div className="ml-auto flex items-center gap-1">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span className="text-xs text-green-600 font-medium">Active</span>
@@ -160,7 +160,7 @@ export function EmergencySupportTeamStatus() {
               Your Support Network ({activeMembers?.length || 0})
             </h4>
             <Button size="sm" variant="ghost" asChild>
-              <Link href="/onboarding/emergency-support-team">
+              <Link href="/onboarding/support-circle">
                 <Settings className="h-4 w-4" />
               </Link>
             </Button>
@@ -235,7 +235,7 @@ export function EmergencySupportTeamStatus() {
                 <div key={activity.id} className="flex items-center gap-3 p-2 bg-blue-50 rounded-lg">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div className="flex-1 text-sm text-blue-800">
-                    {activity.type === 'emergency_support_team_notification' && 'Emergency Support Team notified'}
+                    {activity.type === 'emergency_support_team_notification' && 'Support Circle notified'}
                     {activity.type === 'milestone_celebration' && 'Milestone celebration sent'}
                     {activity.type === 'progress_team_outreach' && 'Progress Support Team reached out'}
                   </div>
@@ -255,7 +255,7 @@ export function EmergencySupportTeamStatus() {
             <div className="text-xs text-gray-600">Active Members</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold text-blue-600">{emergencySupportTeamNotifications.length}</div>
+            <div className="text-lg font-bold text-blue-600">{supportCircleNotifications.length}</div>
             <div className="text-xs text-gray-600">Notifications Sent</div>
           </div>
           <div className="text-center">

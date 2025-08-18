@@ -3,6 +3,7 @@ import { PricingTiers } from '@/components/pricing/pricing-tiers'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Users, Zap, Shield, Heart } from 'lucide-react'
 import Link from 'next/link'
+import { OfferAwarePricingCopy } from '@/components/marketing/offer-aware-pricing-copy'
 
 export const metadata: Metadata = {
   title: 'Pricing - MyDataday',
@@ -21,17 +22,31 @@ export default function PricingPage() {
               Back to Dashboard
             </Link>
           </Button>
+          <div className="ml-auto text-xs text-muted-foreground">
+            <OfferAwarePricingCopy />
+          </div>
         </div>
 
         {/* Hero Section */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-sm font-medium mb-6">
+            🚀 BETA ACCESS - Limited Time
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Choose Your Success Plan
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            The only platform that activates your real-life support network for 90%+ goal achievement rates. 
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            The only platform that activates your real-life support network for 90%+ goal achievement rates.
             Choose the level of support that matches your ambition.
           </p>
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
+            <p className="text-green-800 font-medium">
+              🎯 <strong>Beta Special:</strong> Get lifetime access at these rates with a mentor code + 1 free month to try risk-free!
+            </p>
+            <p className="text-sm text-green-600 mt-2">
+              Pause and restart anytime. Lock in these prices forever.
+            </p>
+          </div>
 
           {/* Value Props */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12">
@@ -75,12 +90,12 @@ export default function PricingPage() {
         {/* FAQ Section */}
         <div className="mt-20 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="font-semibold mb-2">How does the Emergency Support Team work?</h3>
               <p className="text-muted-foreground text-sm">
-                You add 1-5 people (family, friends, colleagues) who care about your success. When you miss your goals, 
+                You add 1-5 people (family, friends, colleagues) who care about your success. When you miss your goals,
                 they receive thoughtful notifications asking them to check in with you. It's social accountability that actually works.
               </p>
             </div>
@@ -88,7 +103,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">What's the difference between tiers?</h3>
               <p className="text-muted-foreground text-sm">
-                Higher tiers get faster Emergency Support Team activation, more planning calls with human coaches, 
+                Higher tiers get faster Emergency Support Team activation, more planning calls with human coaches,
                 and advanced features. All tiers include the core AI + Emergency Support Team system.
               </p>
             </div>
@@ -96,7 +111,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">Can I change plans anytime?</h3>
               <p className="text-muted-foreground text-sm">
-                Yes! You can upgrade or downgrade your plan at any time. Changes take effect at your next billing cycle, 
+                Yes! You can upgrade or downgrade your plan at any time. Changes take effect at your next billing cycle,
                 and you'll have access to new features immediately upon upgrading.
               </p>
             </div>
@@ -104,7 +119,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">Is there a free trial?</h3>
               <p className="text-muted-foreground text-sm">
-                The Basic plan includes core features to get started. You can experience the Emergency Support Team system 
+                The Basic plan includes core features to get started. You can experience the Emergency Support Team system
                 and see results before upgrading to higher tiers with human coaching.
               </p>
             </div>
@@ -112,7 +127,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">How do planning calls work?</h3>
               <p className="text-muted-foreground text-sm">
-                Pro+ tiers include weekly calls with certified Progress Support Team members who help optimize your goals, 
+                Pro+ tiers include weekly calls with certified Progress Support Team members who help optimize your goals,
                 strategies, and Emergency Support Team setup for maximum success.
               </p>
             </div>
@@ -120,7 +135,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">What if my Emergency Support Team doesn't respond?</h3>
               <p className="text-muted-foreground text-sm">
-                Our system tracks engagement and provides alternative strategies. Higher tiers include human Progress Support Team 
+                Our system tracks engagement and provides alternative strategies. Higher tiers include human Progress Support Team
                 intervention to ensure you always have support when you need it most.
               </p>
             </div>

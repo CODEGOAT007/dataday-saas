@@ -114,6 +114,16 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    return [
+      // Reason: shorter, friendlier setup link used in SMS samples and UI
+      {
+        source: '/setup',
+        destination: '/journey/live/pwa-install',
+        permanent: false
+      }
+    ]
+  },
   async headers() {
     return [
       {

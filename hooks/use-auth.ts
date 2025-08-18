@@ -36,32 +36,43 @@ export function useAuth() {
 
   // Reason: Mutation for user signup
   const signUpMutation = useMutation({
-    mutationFn: async ({ email, password, fullName }: { 
+    mutationFn: async ({ email, password, fullName, redirectTo }: {
       email: string
       password: string
-      fullName: string 
+      fullName: string
+      redirectTo?: string
     }) => {
+      // Reason: Always use canonical app URL for email links to satisfy Supabase redirect allow list
+      // Prefer NEXT_PUBLIC_APP_URL if defined; fallback to current origin only in dev
+      const origin = (process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://mydataday.app'))
+      const callbackUrl = redirectTo ? `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}` : `${origin}/auth/callback`
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: callbackUrl,
           data: {
             full_name: fullName,
           },
         },
       })
       if (error) throw error
-      return data
+      const needsConfirmation = !data.user || !data.user.email_confirmed_at
+      return { data, needsConfirmation }
     },
-    onSuccess: (data) => {
+    onSuccess: (result) => {
       // Reason: Invalidate auth queries to refresh state
       queryClient.invalidateQueries({ queryKey: ['auth'] })
-      
-      if (data.user && !data.user.email_confirmed_at) {
-        // Email confirmation required
-        return { needsConfirmation: true }
-      } else if (data.user) {
-        // User is automatically logged in
+
+      if (result.needsConfirmation) {
+        // Reason: Let the UI show a "check your email" message; do not navigate
+        return
+      }
+
+      const user = result.data?.user
+      if (user) {
+        // User is automatically logged in (depends on project settings)
         router.push('/onboarding')
         router.refresh()
       }
@@ -97,6 +108,15 @@ export function useAuth() {
     },
     onSuccess: () => {
       // Reason: Clear auth state and redirect to home
+      queryClient.setQueryData(['auth', 'user'], null)
+      queryClient.invalidateQueries({ queryKey: ['auth'] })
+      router.push('/')
+      router.refresh()
+    },
+    onError: (error) => {
+      // Reason: Log logout errors but still clear local state
+      console.error('Logout error:', error)
+      // Clear local state even if server logout fails
       queryClient.setQueryData(['auth', 'user'], null)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
       router.push('/')

@@ -1,20 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ConsentService } from '@/lib/services/consent-service'
+import { getUser } from '@/lib/supabase'
 
-// POST: Send consent requests to all pending Emergency Support Team members for a user
+// POST: Send consent requests to all pending Support Circle members for a user
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json()
+    console.log('Consent API: Starting request processing')
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      )
+    // Get authenticated user using helper function
+    const user = await getUser()
+    console.log('Consent API: Auth result:', { userId: user?.id, userEmail: user?.email })
+
+    if (!user) {
+      console.error('No authenticated user found in consent API')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Get user's name from auth metadata or email
+    const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Someone you know'
+
     // Send consent requests to all pending members
-    await ConsentService.sendAllConsentRequests(userId)
+    await ConsentService.sendAllConsentRequests(user.id, userName)
 
     return NextResponse.json({
       success: true,
@@ -24,7 +30,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error sending consent requests:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to send consent requests',
         details: error instanceof Error ? error.message : 'Unknown error'
       },

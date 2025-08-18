@@ -4,7 +4,7 @@ import { DayViewCalendar } from '@/components/calendar/day-view-calendar'
 
 export default function TodayPage() {
   return (
-    <div className="container mx-auto py-6">
+    <div className="w-full">
       <DayViewCalendar />
     </div>
   )

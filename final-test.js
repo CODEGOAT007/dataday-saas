@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Final end-to-end sanity check for MyDataday local setup.
+ * Why: Quickly verifies Supabase connectivity, core tables, auth endpoint, RLS, and required env vars.
+ * Owner: Developer Experience / Tooling
+ */
+
 // Final comprehensive test of the Dataday setup
 const { createClient } = require('@supabase/supabase-js');
 
@@ -26,7 +32,7 @@ async function runFinalTest() {
   // Test 2: All Tables Exist
   console.log('\n2. 📊 Verifying Database Schema...');
   const tables = ['users', 'goals', 'daily_logs', 'emergency_support_team', 'ai_interactions', 'streaks'];
-  
+
   for (const table of tables) {
     try {
       const { error } = await supabase.from(table).select('*').limit(1);
@@ -67,7 +73,7 @@ async function runFinalTest() {
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY'
   ];
-  
+
   for (const envVar of envVars) {
     if (process.env[envVar]) {
       console.log(`   ✅ ${envVar} is set`);

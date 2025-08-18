@@ -132,6 +132,14 @@ Track your deployment performance:
 - **Vercel Analytics**: Track Core Web Vitals
 - **GitHub Actions**: Monitor CI/CD pipeline performance
 
+## 🌐 Custom Domain
+
+- Primary domain is configured as: https://mydataday.app
+- If DNS is managed elsewhere, ensure A/ALIAS/CNAME records point to Vercel per Vercel's domain instructions.
+- Verify the alias is attached to production:
+  - CLI: `npx vercel inspect <latest-prod-url>` and confirm `https://mydataday.app` appears under Aliases
+  - Dashboard: Project Settings → Domains → mydataday.app marked as Primary
+
 ## 🎯 Next Steps
 
 1. Set up the GitHub Actions workflow for automated deployments
