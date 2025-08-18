@@ -6,6 +6,29 @@ import { Button } from '@/components/ui/button'
 import { GoalCreationFlow } from '@/components/goals/goal-creation-flow'
 import { ArrowLeft, User, Mail, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
+import { StartIntroSession } from '@/components/admin/start-intro-session'
+import { useSearchParams } from 'next/navigation'
+import { useEffect as useReactEffect, useState as useReactState } from 'react'
+import React from 'react'
+
+function AudioFromSignedPath({ path }: { path: string }) {
+  const [signedUrl, setSignedUrl] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/intro-sessions/signed-url?path=${encodeURIComponent(path)}`)
+        const json = await res.json()
+        if (mounted && res.ok) setSignedUrl(json.signedUrl)
+      } catch {}
+    })()
+    return () => { mounted = false }
+  }, [path])
+  if (!signedUrl) return <div className="text-xs text-gray-400">Fetching audio…</div>
+  return <audio controls src={signedUrl} className="w-full max-w-md" />
+}
+
+import { useIntroSession } from '@/hooks/use-intro-session'
 
 interface User {
   id: string
@@ -24,9 +47,22 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Read sessionId from query (?session=...)
+  const params = useSearchParams()
+  const sessionId = params.get('session')
+  const { session, markPresence } = useIntroSession(sessionId)
+
   useEffect(() => {
     fetchUserData()
   }, [userId])
+
+  // Mark admin presence periodically
+  useEffect(() => {
+    if (!sessionId) return
+    markPresence('admin').catch(() => {})
+    const t = setInterval(() => { markPresence('admin').catch(() => {}) }, 15000)
+    return () => clearInterval(t)
+  }, [sessionId])
 
   const fetchUserData = async () => {
     try {
@@ -46,7 +82,7 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
   }
 
   const goBackToAdmin = () => {
-    window.close() // Close the coaching tab
+    window.close() // Close the admin tab
   }
 
   if (loading) {
@@ -66,7 +102,7 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
         <Card className="bg-red-900/20 border-red-700">
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold text-red-300 mb-2">User Not Found</h2>
-            <p className="text-red-400 mb-4">Could not load user data for coaching session.</p>
+            <p className="text-red-400 mb-4">Could not load user data for intro session.</p>
             <Button onClick={goBackToAdmin} variant="outline">
               Back to Admin Dashboard
             </Button>
@@ -78,7 +114,7 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
 
   return (
     <div className="space-y-6">
-      {/* Coaching Header */}
+      {/* Intro Session Header */}
       <div className="bg-blue-900 border-b border-blue-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -93,7 +129,7 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
             </Button>
             <div>
               <h1 className="text-xl font-semibold text-white">
-                Coaching Session
+                Intro Session
               </h1>
               <p className="text-blue-300 text-sm">
                 Helping user set up goals and support circle
@@ -143,8 +179,47 @@ export function CoachingInterface({ userId }: CoachingInterfaceProps) {
         </Card>
       </div>
 
+      {/* Live Voice Note Indicator (from Intro Session) */}
+      {sessionId && (
+        <div className="px-6">
+          <Card className="bg-green-900/10 border border-green-700">
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-green-200">
+                  {session?.voice_note_url ? 'Voice note received' : 'Waiting for voice note…'}
+                </div>
+                {session?.voice_note_url && (
+                  <AudioFromSignedPath path={session.voice_note_url} />
+                )}
+              </div>
+              {session?.is_recording && (
+                <div className="text-xs text-blue-300">User is recording…</div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Goal Creation Flow */}
-      <div className="px-6">
+      <div className="px-6 space-y-4">
+        {/* Admin can start Intro Session and SMS link */}
+        <StartIntroSession userId={user.id} />
+
+        {/* Live step controls for admin (updates Intro Session if present) */}
+        {sessionId && (
+          <div className="flex gap-2">
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={async () => {
+              try { await fetch('/api/admin/intro-sessions', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sessionId, current_step: 'goal-details' }) }) } catch {}
+            }}>Step: Goal Details</Button>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={async () => {
+              try { await fetch('/api/admin/intro-sessions', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sessionId, current_step: 'voice-message' }) }) } catch {}
+            }}>Step: Voice Message</Button>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={async () => {
+              try { await fetch('/api/admin/intro-sessions', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sessionId, current_step: 'send-notifications' }) }) } catch {}
+            }}>Step: Send Notifications</Button>
+          </div>
+        )}
+
         <GoalCreationFlow />
       </div>
     </div>

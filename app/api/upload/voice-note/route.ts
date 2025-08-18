@@ -91,25 +91,25 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Upload successful:', uploadData)
 
-    // Get the public URL for the uploaded file
-    const { data: urlData } = supabase.storage
+    // Create time-bound signed URL for private playback
+    const { data: signed, error: signErr } = await supabase.storage
       .from('voice-notes')
-      .getPublicUrl(fileName)
+      .createSignedUrl(fileName, 3600) // 1 hour TTL
 
-    if (!urlData?.publicUrl) {
-      console.error('❌ Failed to get public URL')
+    if (signErr || !signed?.signedUrl) {
+      console.error('❌ Failed to create signed URL:', signErr)
       return NextResponse.json(
-        { error: 'Failed to get file URL' },
+        { error: 'Failed to create signed URL' },
         { status: 500 }
       )
     }
 
-    console.log('✅ Voice note uploaded successfully:', urlData.publicUrl)
+    console.log('✅ Voice note uploaded successfully (signed URL issued)')
 
     return NextResponse.json({
       success: true,
-      url: urlData.publicUrl,
-      fileName: fileName,
+      path: fileName,
+      signedUrl: signed.signedUrl,
       size: audioFile.size,
       type: audioFile.type
     })

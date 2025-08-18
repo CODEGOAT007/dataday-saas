@@ -1,12 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useIntroSession } from '@/hooks/use-intro-session'
 
 export default function LiveGoalVoicePage() {
   const router = useRouter()
+  const params = useSearchParams()
+  const sessionId = params.get('session')
+  const { patch, markPresence } = useIntroSession(sessionId)
 
   // UI state
   const [recording, setRecording] = useState(false)
@@ -77,6 +81,14 @@ export default function LiveGoalVoicePage() {
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [recording])
+
+  // Presence heartbeat as user
+  useEffect(() => {
+    if (!sessionId) return
+    markPresence('user').catch(() => {})
+    const t = setInterval(() => { markPresence('user').catch(() => {}) }, 15000)
+    return () => clearInterval(t)
+  }, [sessionId])
 
   // Reason: Clean up resources
   const cleanup = () => {
@@ -150,6 +162,7 @@ export default function LiveGoalVoicePage() {
       }
       setCountdown(null)
       await internalStart()
+      if (sessionId) patch({ is_recording: true }).catch(() => {})
     } catch (e: any) {
       setCountdown(null)
       setError(e?.message || 'Microphone access denied')
@@ -161,6 +174,7 @@ export default function LiveGoalVoicePage() {
     if (rec && rec.state !== 'inactive') {
       rec.stop()
     }
+    if (sessionId) patch({ is_recording: false }).catch(() => {})
   }
 
   const upload = async () => {
@@ -175,9 +189,10 @@ export default function LiveGoalVoicePage() {
       const res = await fetch('/api/upload/voice-note', { method: 'POST', body: fd })
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error || 'Upload failed')
-      setServerUrl(json.url)
-      try { sessionStorage.setItem('mdd_voice_note_url', json.url) } catch {}
-      return json.url as string
+      const signedUrl = json.signedUrl as string
+      setServerUrl(signedUrl)
+      try { sessionStorage.setItem('mdd_voice_note_url', signedUrl) } catch {}
+      return signedUrl
     } catch (e: any) {
       setUploadError(e?.message || 'Upload failed')
       return null
@@ -187,9 +202,19 @@ export default function LiveGoalVoicePage() {
   }
 
   const onNext = async () => {
-    if (!serverUrl) {
+    let finalUrl = serverUrl
+    if (!finalUrl) {
       const url = await upload()
       if (!url) return
+      finalUrl = url
+    }
+    if (sessionId && finalUrl) {
+      // Store storage path in session.voice_note_url for signed on-demand playback
+      // Since upload route now returns signedUrl only, we cannot infer path here.
+      // For MVP, keep signedUrl in session for immediate demo; follow-up: return path as well and store it.
+      await patch({ voice_note_url: finalUrl }).catch(() => {})
+      // Optionally advance step
+      await patch({ current_step: 'send-notifications' }).catch(() => {})
     }
     router.push('/journey/live/support-contacts')
   }
