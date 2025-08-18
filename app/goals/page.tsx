@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { GoalCreationFlow } from '@/components/goals/goal-creation-flow'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Goals - Coach Dashboard',
@@ -24,7 +25,9 @@ export default function GoalsPage() {
         </div>
 
         {/* Goal Creation Flow */}
-        <GoalCreationFlow />
+        <Suspense fallback={<div className="text-gray-400">Loading goal flow…</div>}>
+          <GoalCreationFlow />
+        </Suspense>
       </div>
     </div>
   )
